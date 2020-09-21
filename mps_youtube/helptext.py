@@ -135,7 +135,6 @@ def helptext():
     downloaded file to another format using mps-youtube.
     """.format(c.ul, c.w, c.y)),
 
-
         ("encode", "Encoding to MP3 and other formats", """
     {0}Encoding to MP3 and other formats{1}
 
@@ -248,8 +247,8 @@ def helptext():
     Additionally, {2}set -t{1} may be used to temporarily change a setting without
     saving it to disk
     """.format(c.ul, c.w, c.y, '\n{0}set max_results <number>{1} - show <number> re'
-               'sults when searching (max 50)'.format(c.y, c.w) if not
-               g.detectable_size else '')),
+                               'sults when searching (max 50)'.format(c.y, c.w) if not
+        g.detectable_size else '')),
 
         ("lastfm", "Last.fm configuration", """
     {0}Configure Last.fm{1}

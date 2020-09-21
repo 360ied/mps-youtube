@@ -34,6 +34,7 @@ from . import g, c, commands, screen, history, util
 completer = None
 try:
     import readline
+
     readline.set_history_length(2000)
     has_readline = True
     completer = util.CommandCompleter()
@@ -43,7 +44,6 @@ try:
 
 except ImportError:
     has_readline = False
-
 
 mswin = os.name == "nt"
 
@@ -81,8 +81,8 @@ def matchfunction(func, regex, userinput):
                 g.content = ''.join(traceback.format_exception(
                     *sys.exc_info()))
             g.message = util.F('cant get track') % str(e)
-            g.content = g.content or\
-                content.generate_songlist_display(zeromsg=g.message)
+            g.content = g.content or \
+                        content.generate_songlist_display(zeromsg=g.message)
 
         except pafy.GdataError as e:
             if g.debug_mode:

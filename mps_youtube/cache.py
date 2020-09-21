@@ -10,6 +10,7 @@ from .util import dbg
 # So old cache can be dropped
 CACHE_VERSION = 1
 
+
 def load():
     """ Import cache file. """
     if os.path.isfile(g.CACHEFILE):

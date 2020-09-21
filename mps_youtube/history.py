@@ -41,6 +41,7 @@ def save():
 
     dbg(c.r + "History saved\n---" + c.w)
 
+
 def _convert_to_m3u():
     """ Converts the play_history file to the m3u format. """
     # Skip if m3u file already exists

@@ -3,6 +3,7 @@ import time
 
 try:
     import pylast
+
     has_pylast = True
 except ImportError:
     has_pylast = False
@@ -10,10 +11,11 @@ except ImportError:
 from .. import g, util, config
 from . import command
 
+
 @command(r'lastfm_connect', 'lastfm_connect')
 def init_network(verbose=True):
     """ Initialize the global pylast network variable """
-    if not has_pylast :
+    if not has_pylast:
         if verbose:
             pylast_url = 'https://github.com/pylast/pylast'
             g.message = '"pylast" module not found\n see %s' % (pylast_url)
@@ -22,7 +24,7 @@ def init_network(verbose=True):
     # TODO: Add option to read lastfm config from file or env variable
     key = config.LASTFM_API_KEY.get
     secret = config.LASTFM_API_SECRET.get
-    password = config.LASTFM_PASSWORD.get # already hashed
+    password = config.LASTFM_PASSWORD.get  # already hashed
     username = config.LASTFM_USERNAME.get
 
     if not (key and secret and password and username):
@@ -40,6 +42,7 @@ def init_network(verbose=True):
         if verbose:
             g.message = "Last.fm connection error: %s" % (str(e))
 
+
 def scrobble_track(artist, album, track):
     """ Scrobble a track to the user's Last.fm account """
     if not g.lastfm_network:
@@ -50,6 +53,7 @@ def scrobble_track(artist, album, track):
                                   timestamp=unix_timestamp)
     except (pylast.WSError, pylast.MalformedResponseError, pylast.NetworkError):
         return
+
 
 def set_now_playing(artist, track):
     """ Set the current track as "now playing" on the user's Last.fm account """

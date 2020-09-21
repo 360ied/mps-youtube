@@ -1,9 +1,11 @@
 from .base import ListViewItem
 from .. import util as u
 
+
 class ListUser(ListViewItem):
     """ Describes a user
     """
+
     # pylint: disable=unused-argument
     def id(self, length=0):
         """ Returns YTID """

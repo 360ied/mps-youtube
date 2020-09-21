@@ -125,6 +125,7 @@ def mswinfn(filename):
 
     return filename
 
+
 def sanitize_filename(filename, ignore_slashes=False):
     """ Sanitize filename """
     if not ignore_slashes:
@@ -137,6 +138,7 @@ def sanitize_filename(filename, ignore_slashes=False):
         filename = "".join(x if allowed.match(x) else "_" for x in filename)
 
     return filename
+
 
 def set_window_title(title):
     """ Set terminal window title. """
@@ -272,6 +274,7 @@ def fmt_time(seconds):
 
     return hms
 
+
 def correct_truncate(text, max_len):
     """ Truncate a string taking into account East Asian width chars."""
     str_len, out = 0, ''
@@ -326,7 +329,7 @@ def real_len(u, alt=False):
     if not isinstance(u, str):
         u = u.decode("utf8")
 
-    u = xenc(u) # Handle replacements of unsuported characters
+    u = xenc(u)  # Handle replacements of unsuported characters
 
     ueaw = unicodedata.east_asian_width
 
@@ -437,7 +440,7 @@ def load_player_info(player):
     if "mpv" in player:
         g.mpv_version = _get_mpv_version(player)
         g.mpv_options = subprocess.check_output(
-                [player, "--list-options"]).decode()
+            [player, "--list-options"]).decode()
 
         if not mswin:
             if "--input-unix-socket" in g.mpv_options:
@@ -463,7 +466,7 @@ def number_string_to_list(text):
         k = line
         if "-" in line:
             separated = [int(x.strip()) for x in k.split("-")]
-            for number in list(range(separated[0]-1, separated[1])):
+            for number in list(range(separated[0] - 1, separated[1])):
                 vals.append(number)
         else:
             vals.append(k)
@@ -490,7 +493,7 @@ def _get_mpv_version(exename):
 
 def _get_mplayer_version(exename):
     o = subprocess.check_output([exename]).decode()
-    m = re.search('MPlayer SVN[\s-]r([0-9]+)', o, re.MULTILINE|re.IGNORECASE)
+    m = re.search('MPlayer SVN[\s-]r([0-9]+)', o, re.MULTILINE | re.IGNORECASE)
 
     ver = 0
     if m:
@@ -538,8 +541,8 @@ def _get_metadata(song_title):
 def _get_metadata_from_lastfm(artist, track):
     ''' Try to get metadata with a given artist and track '''
     url = 'https://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=12dec50313f885d407cf8132697b8712&'
-    url += urllib.parse.urlencode({"artist":  artist}) + '&'
-    url += urllib.parse.urlencode({"track":  track}) + '&'
+    url += urllib.parse.urlencode({"artist": artist}) + '&'
+    url += urllib.parse.urlencode({"track": track}) + '&'
     url += '&format=json'
 
     try:
@@ -577,7 +580,6 @@ def assign_player(player):
 
 
 class CommandCompleter:
-
     COMMANDS = []
 
     def __init__(self):
@@ -590,6 +592,7 @@ class CommandCompleter:
         else:
             results = [x for x in self.COMMANDS if x.startswith(text)] + [None]
         return results[state]
+
     def add_cmd(self, val):
-        if(not val in self.COMMANDS):
+        if (not val in self.COMMANDS):
             self.COMMANDS.append(val)

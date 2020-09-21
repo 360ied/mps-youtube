@@ -10,6 +10,7 @@ from .. import player
 try:
     # pylint: disable=F0401
     import pyperclip
+
     has_pyperclip = True
 
 except ImportError:
@@ -17,6 +18,7 @@ except ImportError:
 
 try:
     import readline
+
     has_readline = True
 except ImportError:
     has_readline = False
@@ -77,13 +79,15 @@ def quits(showlogo=True):
 
     screen.msgexit(msg)
 
+
 def _format_comment(snippet, n, qnt, reply=False):
     poster = snippet.get('authorDisplayName')
     shortdate = util.yt_datetime(snippet.get('publishedAt', ''))[1]
     text = snippet.get('textDisplay', '')
     cid = ("%s%s/%s %s" % ('└── ' if reply else '', n, qnt, c.c("g", poster)))
     return ("%-39s %s\n" % (cid, shortdate)) + \
-            c.c("y", text.strip()) + '\n\n'
+           c.c("y", text.strip()) + '\n\n'
+
 
 def _fetch_commentreplies(parentid):
     return pafy.call_gdata('comments', {
@@ -91,6 +95,7 @@ def _fetch_commentreplies(parentid):
         'part': 'snippet',
         'textFormat': 'plainText',
         'maxResults': 50}).get('items', [])
+
 
 def fetch_comments(item):
     """ Fetch comments for item using gdata. """
@@ -108,7 +113,9 @@ def fetch_comments(item):
     try:
         jsdata = pafy.call_gdata('commentThreads', qs)
     except pafy.util.GdataError as e:
-        raise pafy.util.GdataError(str(e).replace(" identified by the <code><a href=\"/youtube/v3/docs/commentThreads/list#videoId\">videoId</a></code> parameter", ""))
+        raise pafy.util.GdataError(str(e).replace(
+            " identified by the <code><a href=\"/youtube/v3/docs/commentThreads/list#videoId\">videoId</a></code> parameter",
+            ""))
     coms = [x.get('snippet', {}) for x in jsdata.get('items', [])]
 
     # skip blanks
@@ -174,7 +181,7 @@ def clipcopy_video(num):
         except Exception as e:
             g.content = generate_songlist_display()
             g.message = link + "\nError - couldn't copy to clipboard.\n" + \
-                    ''.join(traceback.format_exception_only(type(e), e))
+                        ''.join(traceback.format_exception_only(type(e), e))
 
     else:
         g.message = "pyperclip module must be installed for clipboard support\n"
@@ -206,7 +213,7 @@ def clipcopy_stream(num):
         except Exception as e:
             g.content = generate_songlist_display()
             g.message = stream + "\nError - couldn't copy to clipboard.\n" + \
-                    ''.join(traceback.format_exception_only(type(e), e))
+                        ''.join(traceback.format_exception_only(type(e), e))
 
     else:
         g.message = "pyperclip module must be installed for clipboard support\n"
@@ -303,7 +310,7 @@ def stream_info(num):
 def view_history(duplicates=True):
     """ Display the user's play history """
     history = g.userhist.get('history')
-    #g.last_opened = ""
+    # g.last_opened = ""
     try:
         hist_list = list(reversed(history.songs))
         message = "Viewing play history"
@@ -320,10 +327,8 @@ def view_history(duplicates=True):
         g.content = logo(c.r)
         g.message = "History empty"
 
-
     if not config.HISTORY.get:
-        g.message += "\t{1}History recording is currently off{0}".format(c.w,c.y)
-
+        g.message += "\t{1}History recording is currently off{0}".format(c.w, c.y)
 
 
 @command(r'history recent', 'history recent')

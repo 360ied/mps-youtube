@@ -18,7 +18,7 @@ def playlist_remove(name):
         playlists.delete(name)
         g.message = "Deleted playlist %s%s%s" % (c.y, name, c.w)
         g.content = content.playlists_display()
-        #playlists.save()
+        # playlists.save()
 
     else:
         g.message = util.F('pl not found advise ls') % name
@@ -172,7 +172,7 @@ def ls():
     if not g.userpl:
         g.message = util.F('no playlists')
         g.content = g.content or \
-                content.generate_songlist_display(zeromsg=g.message)
+                    content.generate_songlist_display(zeromsg=g.message)
 
     else:
         g.content = content.playlists_display()

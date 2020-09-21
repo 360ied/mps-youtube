@@ -16,7 +16,7 @@ def showconfig():
         has_temps = has_temps or val.temp_value is not None
 
     width -= 27
-    s = "  %s%-{0}s%s : %-{1}s".format(longest_key, longest_val+1)
+    s = "  %s%-{0}s%s : %-{1}s".format(longest_key, longest_val + 1)
 
     if has_temps:
         width -= longest_val + 5

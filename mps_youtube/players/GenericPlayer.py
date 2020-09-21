@@ -38,7 +38,6 @@ class GenericPlayer(CmdPlayer):
         pass
 
     def launch_player(self, cmd):
-
         ##################################################
         # Change this however you want
 

@@ -107,7 +107,7 @@ def download(dltype, num):
     if url_au:
         # multiplex
         name, ext = os.path.splitext(args[1])
-        tmpvideoname = name + '.' +str(random.randint(10000, 99999)) + ext
+        tmpvideoname = name + '.' + str(random.randint(10000, 99999)) + ext
         os.rename(args[1], tmpvideoname)
         mux_cmd = [g.muxapp, "-i", tmpvideoname, "-i", args_au[1], "-c",
                    "copy", name + ".mp4"]
@@ -223,7 +223,7 @@ def _make_fname(song, ext=None, av=None, subdir=None):
 
     if not ext:
         stream = streams.select(streams.get(song),
-                audio=av == "audio", m4a_ok=True)
+                                audio=av == "audio", m4a_ok=True)
         ext = stream['ext']
 
     # filename = song.title[:59] + "." + ext
@@ -359,7 +359,7 @@ def _download(song, filename, url=None, audio=False, allow_transcode=True):
     if not config.OVERWRITE.get:
         if os.path.exists(filename):
             util.xprint("File exists. Skipping %s%s%s ..\n" %
-                    (c.r, filename, c.w))
+                        (c.r, filename, c.w))
             time.sleep(0.2)
             return filename
 
@@ -497,11 +497,12 @@ def gen_dl_text(ddata, song, p):
 
     footer = "Select [%s1-%s%s] to download or [%sEnter%s] to return"
     footer = [footer % (c.y, len(content) - 1, c.w, c.y, c.w)]
-    return(content, hdr, heading, footer)
+    return (content, hdr, heading, footer)
 
 
 def get_dl_data(song, mediatype="any"):
     """ Get filesize and metadata for all streams, return dict. """
+
     def mbsize(x):
         """ Return size in MB. """
         return str(int(x / (1024 ** 2)))

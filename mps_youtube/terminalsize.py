@@ -20,7 +20,7 @@ def get_terminal_size():
     http://stackoverflow.com/questions/566746/how-to-get-console-window-width-in-python
     """
 
-    if sys.version_info >= (3,3):
+    if sys.version_info >= (3, 3):
         return shutil.get_terminal_size()
 
     current_os = platform.system()
@@ -37,7 +37,7 @@ def get_terminal_size():
         tuple_xy = _get_terminal_size_linux()
 
     if tuple_xy is None:
-        tuple_xy = (80, 25)      # default value
+        tuple_xy = (80, 25)  # default value
 
     return tuple_xy
 
@@ -81,6 +81,7 @@ def _get_terminal_size_tput():
 
 def _get_terminal_size_linux():
     """ Get terminal size Linux. """
+
     def ioctl_GWINSZ(fd):
         """ ioctl_GWINSZ. """
         try:

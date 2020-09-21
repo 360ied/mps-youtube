@@ -13,8 +13,8 @@ delete_orig = True
 encoders = []
 muxapp = False
 meta = {}
-artist = "" # Mostly used for scrobbling purposes
-album = "" # Mostly used for scrobbling purposes
+artist = ""  # Mostly used for scrobbling purposes
+album = ""  # Mostly used for scrobbling purposes
 scrobble = False
 scrobble_queue = []
 lastfm_network = None
@@ -48,7 +48,7 @@ pafs = collections.OrderedDict()
 streams = collections.OrderedDict()
 pafy_pls = {}  #
 last_opened = message = content = ""
-suffix = "3" # Python 3
+suffix = "3"  # Python 3
 OLD_CFFILE = os.path.join(paths.get_config_dir(), "config")
 CFFILE = os.path.join(paths.get_config_dir(), "config.json")
 TCFILE = os.path.join(paths.get_config_dir(), "transcode")
@@ -61,14 +61,14 @@ CACHEFILE = os.path.join(paths.get_config_dir(), "cache_py_" + sys.version[0:5])
 READLINE_FILE = None
 PLAYER_OBJ = None
 categories = {
-        "film":      1,
-        "autos":     2,
-        "music":    10,
-        "sports":   17,
-        "travel":   19,
-        "gaming":   20,
-        "blogging": 21,
-        "news":     25
+    "film": 1,
+    "autos": 2,
+    "music": 10,
+    "sports": 17,
+    "travel": 19,
+    "gaming": 20,
+    "blogging": 21,
+    "news": 25
 }
 playerargs_defaults = {
     "mpv": {
@@ -88,7 +88,7 @@ playerargs_defaults = {
         "geo": "-geometry"},
     "vlc": {
         "title": "--meta-title"}
-    }
+}
 argument_commands = []
 commands = []
 

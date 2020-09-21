@@ -45,7 +45,7 @@ def get(vid, force=False, callback=None, threeD=False):
     if not force and have_stream:
         ss = str(int(g.streams[ytid]['expiry'] - now) // 60)
         util.dbg("%s%sGot streams from cache (%s mins left)%s",
-                c.g, prfx, ss, c.w)
+                 c.g, prfx, ss, c.w)
         return g.streams.get(ytid)['meta']
 
     p = util.get_pafy(vid, force=force, callback=callback)

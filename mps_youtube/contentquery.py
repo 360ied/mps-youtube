@@ -56,12 +56,12 @@ class ContentQuery:
         qry = dict(
             pageToken=self.nextpagetoken,
             **(self.queries)
-            ) if self.nextpagetoken else self.queries
+        ) if self.nextpagetoken else self.queries
 
         # Run query
         util.dbg("CQ.query", qry)
         data = pafy.call_gdata(self.api, qry)
-        
+
         self.maxresults = int(data.get("pageInfo").get("totalResults"))
         self.nextpagetoken = data.get("nextPageToken")
 

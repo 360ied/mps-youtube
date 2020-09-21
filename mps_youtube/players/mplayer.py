@@ -52,7 +52,7 @@ class mplayer(CmdPlayer):
             util.list_update(pd["novid"], args)
 
         elif ((config.FULLSCREEN.get and self.override != "window")
-                or self.override == "fullscreen"):
+              or self.override == "fullscreen"):
             util.list_update(pd["fs"], args)
 
         # prevent ffmpeg issue (https://github.com/mpv-player/mpv/issues/579)

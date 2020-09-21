@@ -10,6 +10,7 @@ from urllib.request import urlopen
 
 try:
     import pylast
+
     has_pylast = True
 except ImportError:
     has_pylast = False
@@ -18,15 +19,14 @@ import pafy
 
 from . import g, c, paths, util
 
-
 mswin = os.name == "nt"
 
-class ConfigItem:
 
+class ConfigItem:
     """ A configuration item. """
 
     def __init__(self, name, value, minval=None, maxval=None, check_fn=None,
-            require_known_player=False, allowed_values=None):
+                 require_known_player=False, allowed_values=None):
         """ If specified, the check_fn should return a dict.
 
         {valid: bool, message: success/fail mesage, value: value to set}
@@ -167,6 +167,7 @@ class ConfigItem:
             set_save(self, value, is_temp)
             return success_msg
 
+
 def set_save(self, value, is_temp):
     if not is_temp:
         self.temp_value = None
@@ -175,12 +176,13 @@ def set_save(self, value, is_temp):
     else:
         self.temp_value = value
 
+
 def check_console_width(val):
     """ Show ruler to check console width. """
     valid = True
     message = "-" * val + "\n"
-    message += "console_width set to %s, try a lower value if above line ove"\
-        "rlaps" % val
+    message += "console_width set to %s, try a lower value if above line ove" \
+               "rlaps" % val
     return dict(valid=valid, message=message)
 
 
@@ -301,56 +303,55 @@ def check_lastfm_password(password):
 
 
 class _Config:
-
     """ Holds various configuration values. """
 
     _configitems = [
-            ConfigItem("order", "relevance",
-                allowed_values="relevance date views rating title".split()),
-            ConfigItem("user_order", "", allowed_values =
-                [""] + "relevance date views rating".split()),
-            ConfigItem("max_results", 19, maxval=50, minval=1),
-            ConfigItem("console_width", 80, minval=70,
-                maxval=880, check_fn=check_console_width),
-            ConfigItem("max_res", 2160, minval=360, maxval=2160),
-            ConfigItem("player", "mplayer" + ".exe" * mswin,
-                check_fn=check_player),
-            ConfigItem("playerargs", ""),
-            ConfigItem("encoder", 0, minval=0, check_fn=check_encoder),
-            ConfigItem("notifier", ""),
-            ConfigItem("checkupdate", True),
-            ConfigItem("show_player_keys", True, require_known_player=True),
-            ConfigItem("fullscreen", False, require_known_player=True),
-            ConfigItem("show_status", True),
-            ConfigItem("always_repeat", False),
-            ConfigItem("columns", ""),
-            ConfigItem("ddir", paths.get_default_ddir(), check_fn=check_ddir),
-            ConfigItem("overwrite", True),
-            ConfigItem("show_video", False),
-            ConfigItem("search_music", True),
-            ConfigItem("window_pos", "", check_fn=check_win_pos,
-                require_known_player=True),
-            ConfigItem("window_size", "",
-                check_fn=check_win_size, require_known_player=True),
-            ConfigItem("download_command", ''),
-            ConfigItem("lookup_metadata", True),
-            ConfigItem("lastfm_username", ''),
-            ConfigItem("lastfm_password", '', check_fn=check_lastfm_password),
-            ConfigItem("lastfm_api_key", ''),
-            ConfigItem("lastfm_api_secret", ''),
-            ConfigItem("audio_format", "auto",
-                allowed_values="auto webm m4a".split()),
-            ConfigItem("video_format", "auto",
-                allowed_values="auto webm mp4 3gp".split()),
-            ConfigItem("api_key", "AIzaSyCIM4EzNqi1in22f4Z3Ru3iYvLaY8tc3bo",
-                check_fn=check_api_key),
-            ConfigItem("autoplay", False),
-            ConfigItem("set_title", True),
-            ConfigItem("mpris", not mswin),
-            ConfigItem("show_qrcode", False),
-            ConfigItem("history", True), 
-            ConfigItem("input_history", True)
-            ]
+        ConfigItem("order", "relevance",
+                   allowed_values="relevance date views rating title".split()),
+        ConfigItem("user_order", "", allowed_values=
+        [""] + "relevance date views rating".split()),
+        ConfigItem("max_results", 19, maxval=50, minval=1),
+        ConfigItem("console_width", 80, minval=70,
+                   maxval=880, check_fn=check_console_width),
+        ConfigItem("max_res", 2160, minval=360, maxval=2160),
+        ConfigItem("player", "mplayer" + ".exe" * mswin,
+                   check_fn=check_player),
+        ConfigItem("playerargs", ""),
+        ConfigItem("encoder", 0, minval=0, check_fn=check_encoder),
+        ConfigItem("notifier", ""),
+        ConfigItem("checkupdate", True),
+        ConfigItem("show_player_keys", True, require_known_player=True),
+        ConfigItem("fullscreen", False, require_known_player=True),
+        ConfigItem("show_status", True),
+        ConfigItem("always_repeat", False),
+        ConfigItem("columns", ""),
+        ConfigItem("ddir", paths.get_default_ddir(), check_fn=check_ddir),
+        ConfigItem("overwrite", True),
+        ConfigItem("show_video", False),
+        ConfigItem("search_music", True),
+        ConfigItem("window_pos", "", check_fn=check_win_pos,
+                   require_known_player=True),
+        ConfigItem("window_size", "",
+                   check_fn=check_win_size, require_known_player=True),
+        ConfigItem("download_command", ''),
+        ConfigItem("lookup_metadata", True),
+        ConfigItem("lastfm_username", ''),
+        ConfigItem("lastfm_password", '', check_fn=check_lastfm_password),
+        ConfigItem("lastfm_api_key", ''),
+        ConfigItem("lastfm_api_secret", ''),
+        ConfigItem("audio_format", "auto",
+                   allowed_values="auto webm m4a".split()),
+        ConfigItem("video_format", "auto",
+                   allowed_values="auto webm mp4 3gp".split()),
+        ConfigItem("api_key", "AIzaSyCIM4EzNqi1in22f4Z3Ru3iYvLaY8tc3bo",
+                   check_fn=check_api_key),
+        ConfigItem("autoplay", False),
+        ConfigItem("set_title", True),
+        ConfigItem("mpris", not mswin),
+        ConfigItem("show_qrcode", False),
+        ConfigItem("history", True),
+        ConfigItem("input_history", True)
+    ]
 
     def __getitem__(self, key):
         # TODO: Possibly more efficient algorithm, w/ caching
@@ -416,8 +417,9 @@ class _Config:
                 self.PLAYERARGS.value = " ".join(self.PLAYERARGS.get)
                 self.save()
 
+
 Config = _Config()
-del _Config # _Config is a singleton and should not have more instances
+del _Config  # _Config is a singleton and should not have more instances
 # Prevent module from being deleted
 # http://stackoverflow.com/questions/5365562/why-is-the-value-of-name-changing-after-assignment-to-sys-modules-name
 ref = sys.modules[__name__]

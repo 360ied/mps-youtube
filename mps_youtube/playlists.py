@@ -11,7 +11,7 @@ from .playlist import Playlist, Video
 def save():
     """ Save playlists.  Called each time a playlist is saved or deleted. """
     for pl in g.userpl:
-        with open(os.path.join(g.PLFOLDER, pl+'.m3u'), 'w') as plf:
+        with open(os.path.join(g.PLFOLDER, pl + '.m3u'), 'w') as plf:
             plf.write('#EXTM3U\n\n')
             for song in g.userpl[pl].songs:
                 plf.write('#EXTINF:%d,%s\n' % (song.length, song.title))
@@ -56,7 +56,7 @@ def delete(name):
     """ Delete playlist, including m3u file. """
     del g.userpl[name]
     os.remove(os.path.join(g.PLFOLDER, name + '.m3u'))
-    
+
 
 def read_m3u(m3u):
     """ Processes an m3u file into a Playlist object. """
@@ -141,7 +141,7 @@ def _convert_playlist_to_m3u():
     elif not os.path.isfile(g.PLFILE):
         return
 
-    try: 
+    try:
         with open(g.PLFILE, 'rb') as plf:
             old_playlists = pickle.load(plf)
 

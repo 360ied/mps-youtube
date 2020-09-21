@@ -11,6 +11,7 @@ WORD = r'[^\W\d][-\w\s]{,100}'
 RS = r'(?:(?:repeat|shuffle|-[avfw])\s*)'
 PL = r'\S*?((?:RD|PL|LL|UU|FL|OL)[-_0-9a-zA-Z]+)\s*'
 
+
 ## @command decorator
 ##
 ## The @command decorator takes a single regex followed by one or more
@@ -26,10 +27,12 @@ def command(regex, *commands):
     """ Decorator to register an mps-youtube command. """
     for command in commands:
         completer.add_cmd(command)
+
     def decorator(function):
         cmd = Command(re.compile(regex), None, None, function)
         g.commands.append(cmd)
         return function
+
     return decorator
 
 

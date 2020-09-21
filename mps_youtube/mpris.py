@@ -40,8 +40,8 @@ PLAYER_INTERFACE = 'org.mpris.MediaPlayer2.Player'
 PROPERTIES_INTERFACE = 'org.freedesktop.DBus.Properties'
 MPRIS_PATH = '/org/mpris/MediaPlayer2'
 
-class Mpris2Controller:
 
+class Mpris2Controller:
     """
         Controller for various MPRIS objects.
     """
@@ -115,7 +115,7 @@ class Mpris2Controller:
             self.bus.get_bus().request_name(BUS_NAME)
         else:
             self.bus = dbus.service.BusName(BUS_NAME,
-                bus=dbus.SessionBus(mainloop=DBusGMainLoop()))
+                                            bus=dbus.SessionBus(mainloop=DBusGMainLoop()))
 
     def _add_interfaces(self):
         """
@@ -135,7 +135,6 @@ class Mpris2Controller:
 
 
 class Mpris2MediaPlayer(dbus.service.Object):
-
     """
         main dbus object for MPRIS2
         implementing interfaces:
@@ -152,39 +151,39 @@ class Mpris2MediaPlayer(dbus.service.Object):
         self.fifo = None
         self.mpv = False
         self.properties = {
-            ROOT_INTERFACE : {
-                'read_only' : {
-                    'CanQuit' : False,
-                    'CanSetFullscreen' : False,
-                    'CanRaise' : False,
-                    'HasTrackList' : False,
-                    'Identity' : IDENTITY,
-                    'DesktopEntry' : 'mps-youtube',
-                    'SupportedUriSchemes' : dbus.Array([], 's', 1),
-                    'SupportedMimeTypes' : dbus.Array([], 's', 1),
+            ROOT_INTERFACE: {
+                'read_only': {
+                    'CanQuit': False,
+                    'CanSetFullscreen': False,
+                    'CanRaise': False,
+                    'HasTrackList': False,
+                    'Identity': IDENTITY,
+                    'DesktopEntry': 'mps-youtube',
+                    'SupportedUriSchemes': dbus.Array([], 's', 1),
+                    'SupportedMimeTypes': dbus.Array([], 's', 1),
                 },
-                'read_write' : {
-                    'Fullscreen' : False,
+                'read_write': {
+                    'Fullscreen': False,
                 },
             },
-            PLAYER_INTERFACE : {
-                'read_only' : {
-                    'PlaybackStatus' : 'Stopped',
-                    'Metadata' : { 'mpris:trackid' : dbus.ObjectPath(
-                                '/CurrentPlaylist/UnknownTrack', variant_level=1) },
-                    'Position' : dbus.Int64(0),
-                    'MinimumRate' : 1.0,
-                    'MaximumRate' : 1.0,
-                    'CanGoNext' : True,
-                    'CanGoPrevious' : True,
-                    'CanPlay' : True,
-                    'CanPause' : True,
-                    'CanSeek' : True,
-                    'CanControl' : True,
+            PLAYER_INTERFACE: {
+                'read_only': {
+                    'PlaybackStatus': 'Stopped',
+                    'Metadata': {'mpris:trackid': dbus.ObjectPath(
+                        '/CurrentPlaylist/UnknownTrack', variant_level=1)},
+                    'Position': dbus.Int64(0),
+                    'MinimumRate': 1.0,
+                    'MaximumRate': 1.0,
+                    'CanGoNext': True,
+                    'CanGoPrevious': True,
+                    'CanPlay': True,
+                    'CanPause': True,
+                    'CanSeek': True,
+                    'CanControl': True,
                 },
-                'read_write' : {
-                    'Rate' : 1.0,
-                    'Volume' : 1.0,
+                'read_write': {
+                    'Rate': 1.0,
+                    'Volume': 1.0,
                 },
             },
         }
@@ -233,7 +232,7 @@ class Mpris2MediaPlayer(dbus.service.Object):
         """
             init command fifo for mplayer and old versions of mpv
         """
-        time.sleep(1) # give it some time so fifo could be properly created
+        time.sleep(1)  # give it some time so fifo could be properly created
         try:
             self.fifo = open(fifopath, 'w')
             self._sendcommand(['get_property', 'volume'])
@@ -259,7 +258,7 @@ class Mpris2MediaPlayer(dbus.service.Object):
 
             if newval != oldval:
                 self.properties[PLAYER_INTERFACE]['read_only']['PlaybackStatus'] = newval
-                self.PropertiesChanged(PLAYER_INTERFACE, { 'PlaybackStatus': newval }, [])
+                self.PropertiesChanged(PLAYER_INTERFACE, {'PlaybackStatus': newval}, [])
 
         elif name == 'stop':
             oldval = self.properties[PLAYER_INTERFACE]['read_only']['PlaybackStatus']
@@ -271,8 +270,8 @@ class Mpris2MediaPlayer(dbus.service.Object):
 
             if newval != oldval:
                 self.properties[PLAYER_INTERFACE]['read_only']['PlaybackStatus'] = newval
-                self.PropertiesChanged(PLAYER_INTERFACE, { 'PlaybackStatus': newval },
-                    ['Metadata', 'Position'])
+                self.PropertiesChanged(PLAYER_INTERFACE, {'PlaybackStatus': newval},
+                                       ['Metadata', 'Position'])
 
         elif name == 'volume' and val is not None:
             oldval = self.properties[PLAYER_INTERFACE]['read_write']['Volume']
@@ -280,15 +279,15 @@ class Mpris2MediaPlayer(dbus.service.Object):
 
             if newval != oldval:
                 self.properties[PLAYER_INTERFACE]['read_write']['Volume'] = newval
-                self.PropertiesChanged(PLAYER_INTERFACE, { 'Volume': newval }, [])
+                self.PropertiesChanged(PLAYER_INTERFACE, {'Volume': newval}, [])
 
         elif name == 'time-pos' and val:
             oldval = self.properties[PLAYER_INTERFACE]['read_only']['Position']
-            newval = dbus.Int64(val * 10**6)
+            newval = dbus.Int64(val * 10 ** 6)
 
             if newval != oldval:
                 self.properties[PLAYER_INTERFACE]['read_only']['Position'] = newval
-            if abs(newval - oldval) >= 4 * 10**6:
+            if abs(newval - oldval) >= 4 * 10 ** 6:
                 self.Seeked(newval)
 
         elif name == 'metadata' and val:
@@ -299,19 +298,19 @@ class Mpris2MediaPlayer(dbus.service.Object):
 
             oldval = self.properties[PLAYER_INTERFACE]['read_only']['Metadata']
             newval = {
-                'mpris:trackid' : dbus.ObjectPath(
+                'mpris:trackid': dbus.ObjectPath(
                     '/CurrentPlaylist/ytid/' + trackid_sanitized, variant_level=1),
-                'mpris:length' : dbus.Int64(length * 10**6, variant_level=1),
-                'mpris:artUrl' : dbus.String(arturl, variant_level=1),
-                'xesam:title' : dbus.String(title, variant_level=1),
-                'xesam:artist' : dbus.Array(artist, 's', 1),
-                'xesam:album' : dbus.String(album, variant_level=1),
-                'xesam:url' : dbus.String(yturl, variant_level=1),
+                'mpris:length': dbus.Int64(length * 10 ** 6, variant_level=1),
+                'mpris:artUrl': dbus.String(arturl, variant_level=1),
+                'xesam:title': dbus.String(title, variant_level=1),
+                'xesam:artist': dbus.Array(artist, 's', 1),
+                'xesam:album': dbus.String(album, variant_level=1),
+                'xesam:url': dbus.String(yturl, variant_level=1),
             }
 
             if newval != oldval:
                 self.properties[PLAYER_INTERFACE]['read_only']['Metadata'] = newval
-                self.PropertiesChanged(PLAYER_INTERFACE, { 'Metadata': newval }, [])
+                self.PropertiesChanged(PLAYER_INTERFACE, {'Metadata': newval}, [])
 
         elif name == 'seeking':
             # send signal to keep time-pos synced between player and client
@@ -423,7 +422,7 @@ class Mpris2MediaPlayer(dbus.service.Object):
             Seeks forward in the current track by the specified number
             of microseconds.
         """
-        self._sendcommand(["seek", offset / 10**6])
+        self._sendcommand(["seek", offset / 10 ** 6])
 
     @dbus.service.method(PLAYER_INTERFACE, in_signature='ox')
     def SetPosition(self, track_id, position):
@@ -438,7 +437,7 @@ class Mpris2MediaPlayer(dbus.service.Object):
             Sets the current track position in microseconds.
         """
         if track_id == self.properties[PLAYER_INTERFACE]['read_only']['Metadata']['mpris:trackid']:
-            self._sendcommand(["seek", position / 10**6, 'absolute' if self.mpv else 2])
+            self._sendcommand(["seek", position / 10 ** 6, 'absolute' if self.mpv else 2])
 
     @dbus.service.method(PLAYER_INTERFACE, in_signature='s')
     def OpenUri(self, uri):
@@ -500,7 +499,7 @@ class Mpris2MediaPlayer(dbus.service.Object):
             if property_name in self.properties[interface_name]['read_write']:
                 if property_name == 'Volume':
                     self._sendcommand(["set_property", "volume", new_value * 100])
-                    if self.fifo: # fix for mplayer (force update)
+                    if self.fifo:  # fix for mplayer (force update)
                         self._sendcommand(['get_property', 'volume'])
         else:
             raise dbus.exceptions.DBusException(
@@ -519,12 +518,14 @@ class Mpris2MediaPlayer(dbus.service.Object):
         """
         pass
 
+
 class MprisConnection(object):
     """
         Object encapsulating pipe for communication with Mpris2Controller.
         This object wraps send to ensure communicating process never crashes,
         even when Mpris2Controller existed or crashed.
     """
+
     def __init__(self, connection):
         super(MprisConnection, self).__init__()
         self.connection = connection
@@ -549,14 +550,14 @@ def main(connection):
 
     try:
         mprisctl = Mpris2Controller()
-    except ImportError: # gi.repository import GLib
+    except ImportError:  # gi.repository import GLib
         print("could not load MPRIS interface. missing libraries.")
         return
     try:
         mprisctl.acquire()
     except dbus.exceptions.DBusException as e:
         print('mpris interface couldn\'t be initialized. reason: %s'
-               % e.get_dbus_message())
+              % e.get_dbus_message())
         return
     mprisctl.run(connection)
     mprisctl.release()

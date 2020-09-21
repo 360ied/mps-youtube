@@ -68,7 +68,7 @@ def play(pre, choice, post=""):
         forcevid = "-v" in pre + post
 
         if ((novid and fs) or (novid and nofs) or (nofs and fs)
-           or (novid and forcevid)):
+                or (novid and forcevid)):
             raise IOError("Conflicting override options specified")
 
         override = False
@@ -96,7 +96,7 @@ def play(pre, choice, post=""):
 
         try:
             if not config.PLAYER.get or not util.has_exefile(config.PLAYER.get):
-                g.message = "Player not configured! Enter %sset player <player_app> "\
+                g.message = "Player not configured! Enter %sset player <player_app> " \
                             "%s to set a player" % (c.g, c.w)
                 return
             g.PLAYER_OBJ.play(songlist, shuffle, repeat, override)
@@ -114,7 +114,7 @@ def play(pre, choice, post=""):
 
 
 @command(r'(%s{0,3})(?:\*|all)\s*(%s{0,3})' %
-        (RS, RS))
+         (RS, RS))
 def play_all(pre, choice, post=""):
     """ Play all tracks in model (last displayed). shuffle/repeat if req'd."""
     options = pre + choice + post

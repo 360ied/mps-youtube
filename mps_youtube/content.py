@@ -10,6 +10,7 @@ from .util import getxy, fmt_time, uea_pad, yt_datetime, F
 try:
     import qrcode
     import io
+
     HAS_QRCODE = True
 except ImportError:
     HAS_QRCODE = False
@@ -36,7 +37,7 @@ class LineContent(PaginatedContent):
         return self.get_text(s, e)
 
     def numPages(self):
-        return math.ceil(self.get_count()/getxy().max_results)
+        return math.ceil(self.get_count() / getxy().max_results)
 
     def get_text(self, s, e):
         raise NotImplementedError
@@ -63,13 +64,13 @@ def page_msg(page=0):
     if isinstance(g.content, PaginatedContent):
         page_count = g.content.numPages()
     else:
-        page_count = math.ceil(g.result_count/getxy().max_results)
+        page_count = math.ceil(g.result_count / getxy().max_results)
 
     if page_count > 1:
         pagemsg = "{}{}/{}{}"
-        #start_index = max_results * g.current_page
+        # start_index = max_results * g.current_page
         return pagemsg.format('<' if page > 0 else '[',
-                              "%s%s%s" % (c.y, page+1, c.w),
+                              "%s%s%s" % (c.y, page + 1, c.w),
                               page_count,
                               '>' if page + 1 < page_count else ']')
     return None

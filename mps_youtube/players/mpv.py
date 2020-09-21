@@ -19,7 +19,7 @@ class mpv(CmdPlayer):
         self.player = player
         self.mpv_version = _get_mpv_version(player)
         self.mpv_options = subprocess.check_output(
-                [player, "--list-options"]).decode()
+            [player, "--list-options"]).decode()
 
         self.mpv_usesock = ""
         if not mswin:
@@ -65,7 +65,7 @@ class mpv(CmdPlayer):
             util.list_update(pd["novid"], args)
 
         elif ((config.FULLSCREEN.get and self.override != "window")
-                or self.override == "fullscreen"):
+              or self.override == "fullscreen"):
             util.list_update(pd["fs"], args)
 
         # prevent ffmpeg issue (https://github.com/mpv-player/mpv/issues/579)
@@ -190,7 +190,7 @@ class mpv(CmdPlayer):
                     elif resp.get('event') == 'property-change' and resp['id'] == 2:
                         volume_level = int(resp['data'])
 
-                    if(volume_level and volume_level != g.volume):
+                    if (volume_level and volume_level != g.volume):
                         g.volume = volume_level
                     if elapsed_s:
                         self.make_status_line(elapsed_s, prefix, songlength,

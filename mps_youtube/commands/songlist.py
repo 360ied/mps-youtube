@@ -9,7 +9,7 @@ from ..playlist import Video
 
 
 def paginatesongs(func, page=0, splash=True, dumps=False,
-        length=None, msg=None, failmsg=None, loadmsg=None):
+                  length=None, msg=None, failmsg=None, loadmsg=None):
     """
     A utility function for handling lists of songs, so that
     the pagination and the dump command will work properly.
@@ -58,8 +58,8 @@ def paginatesongs(func, page=0, splash=True, dumps=False,
     if length is None:
         length = len(func)
 
-    args = {'func':func, 'length':length, 'msg':msg,
-            'failmsg':failmsg, 'loadmsg': loadmsg}
+    args = {'func': func, 'length': length, 'msg': msg,
+            'failmsg': failmsg, 'loadmsg': loadmsg}
     g.last_search_query = (paginatesongs, args)
     g.browse_mode = "normal"
     g.current_page = page
@@ -155,7 +155,7 @@ def nextprev(np, page=None):
         function = g.content.getPage
         args = {}
     else:
-        page_count = math.ceil(g.result_count/util.getxy().max_results)
+        page_count = math.ceil(g.result_count / util.getxy().max_results)
         function, args = g.last_search_query
 
     good = False
@@ -167,8 +167,8 @@ def nextprev(np, page=None):
                 good = True
 
         elif np == "p":
-            if page and int(page) in range(1,20):
-                g.current_page = int(page)-1
+            if page and int(page) in range(1, 20):
+                g.current_page = int(page) - 1
                 good = True
 
             elif g.current_page > 0:
@@ -223,11 +223,11 @@ def reverse_songs_range(lower, upper):
     """ Reverse the songs within a specified range. """
     lower, upper = int(lower), int(upper)
     if lower > upper: lower, upper = upper, lower
-    
-    g.model.songs[lower-1:upper] = reversed(g.model.songs[lower-1:upper])
+
+    g.model.songs[lower - 1:upper] = reversed(g.model.songs[lower - 1:upper])
     g.message = c.y + "Reversed range: " + str(lower) + "-" + str(upper) + c.w
     g.content = content.generate_songlist_display()
-    
+
 
 @command(r'reverse all', 'reverse all')
 def reverse_playlist():
@@ -241,7 +241,7 @@ def reverse_playlist():
 
     songs_list_or_func = g.last_search_query[1]['func']
     if callable(songs_list_or_func):
-        songs = reversed(songs_list_or_func(0,None))
+        songs = reversed(songs_list_or_func(0, None))
     else:
         songs = reversed(songs_list_or_func)
 

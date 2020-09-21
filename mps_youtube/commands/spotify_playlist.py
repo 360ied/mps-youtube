@@ -6,6 +6,7 @@ try:
     # pylint: disable=F0401
     import spotipy
     import spotipy.oauth2 as oauth2
+
     has_spotipy = True
 
 except ImportError:
@@ -122,6 +123,7 @@ def _best_song_match(songs, title, duration, titleweight, durationweight):
 
 def _match_tracks(tracks):
     """ Match list of tracks by performing multiple searches. """
+
     # pylint: disable=R0914
 
     def dtime(x):
@@ -132,7 +134,7 @@ def _match_tracks(tracks):
     for track in tracks:
         ttitle = track['name']
         artist = track['artists'][0]['name']
-        length = track['duration_ms']/1000
+        length = track['duration_ms'] / 1000
         util.xprint("Search :  %s%s - %s%s - %s" % (c.y, artist, ttitle, c.w,
                                                     dtime(length)))
         q = "%s %s" % (artist, ttitle)
@@ -201,14 +203,13 @@ def search_user(term):
         screen.update()
 
         choice = int(input("> "))
-        playlist = links[choice-1]
+        playlist = links[choice - 1]
 
         search_playlist(playlist['external_urls']['spotify'], spotify=spotify)
 
     else:
         g.message = "spotipy module must be installed for Spotify support\n"
         g.message += "see https://pypi.python.org/pypi/spotipy/"
-
 
 
 @command(r'splaylist\s*(.*[-_a-zA-Z0-9].*)?', 'splaylist')

@@ -15,6 +15,7 @@ from .commands import lastfm
 mswin = os.name == "nt"
 not_utf8_environment = mswin or "UTF-8" not in sys.stdout.encoding
 
+
 class BasePlayer:
     _playbackStatus = "Paused"
     _last_displayed_line = None
@@ -46,7 +47,7 @@ class BasePlayer:
             random.shuffle(self.songlist)
 
         self.song_no = 0
-        while 0 <= self.song_no <= len(self.songlist)-1:
+        while 0 <= self.song_no <= len(self.songlist) - 1:
             self.song = self.songlist[self.song_no]
             g.content = self._playback_progress(self.song_no, self.songlist,
                                                 repeat=repeat)
@@ -70,9 +71,9 @@ class BasePlayer:
 
             try:
                 self.video, self.stream, self.override = stream_details(
-                                                            self.song,
-                                                            override=self.override,
-                                                            softrepeat=self.softrepeat)
+                    self.song,
+                    override=self.override,
+                    softrepeat=self.softrepeat)
                 self._playsong()
 
             except KeyboardInterrupt:
@@ -108,6 +109,7 @@ class BasePlayer:
 
     def stop(self):
         pass
+
     ###############
 
     def seek(self):
@@ -119,8 +121,8 @@ class BasePlayer:
         """
         # pylint: disable=R0911,R0912
         if not config.PLAYER.get or not util.has_exefile(config.PLAYER.get):
-            g.message = "Player not configured! Enter %sset player <player_app> "\
-                "%s to set a player" % (c.g, c.w)
+            g.message = "Player not configured! Enter %sset player <player_app> " \
+                        "%s to set a player" % (c.g, c.w)
             return
 
         if config.NOTIFIER.get:
@@ -133,7 +135,7 @@ class BasePlayer:
         screen.writestatus(self.songdata)
 
         self._launch_player()
-        
+
         if config.HISTORY.get:
             history.add(self.song)
 

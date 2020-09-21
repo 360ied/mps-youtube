@@ -57,7 +57,7 @@ def _writeline(text):
     if mswin:
         # Avoids creating new line every time it is run
         # TODO: Figure out why this is needed
-        spaces =- 1
+        spaces = - 1
     text = text[:width - 3]
     sys.stdout.write(" " + text + (" " * spaces) + "\r")
     sys.stdout.flush()

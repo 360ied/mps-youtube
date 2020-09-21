@@ -69,7 +69,7 @@ class ListView(content.PaginatedContent):
 
     def _page_slice(self):
         chgt = self.views_per_page()
-        return slice(self.page * chgt, (self.page+1) * chgt)
+        return slice(self.page * chgt, (self.page + 1) * chgt)
 
     def content(self):
         """ Generates content
@@ -88,7 +88,9 @@ class ListView(content.PaginatedContent):
             TODO: Make it so set columns can set "remaining" ?
         """
         # Sums all ints, deal with strings later
-        remaining = (util.getxy().width) - sum(1 + (x['size'] if x['size'] and x['size'].__class__ == int else 0) for x in self.columns) - (len(self.columns))
+        remaining = (util.getxy().width) - sum(
+            1 + (x['size'] if x['size'] and x['size'].__class__ == int else 0) for x in self.columns) - (
+                        len(self.columns))
         lengthsize = 0
         if "length" in [x['size'] for x in self.columns]:
             max_l = max((getattr(x, "length")() for x in self.objects))
@@ -134,7 +136,7 @@ class ListView(content.PaginatedContent):
 
             line = col + line + c.w
             out += line + "\n"
-        
+
         return out
 
     def _play(self, _, choice, __):  # pre, choice, post

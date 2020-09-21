@@ -12,6 +12,7 @@ import pafy
 try:
     # pylint: disable=F0401
     import colorama
+
     has_colorama = True
 
 except ImportError:
@@ -19,6 +20,7 @@ except ImportError:
 
 try:
     import readline
+
     readline.set_history_length(2000)
     has_readline = True
 
