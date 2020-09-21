@@ -1,19 +1,16 @@
-import os
-import sys
-import random
 import logging
 import math
-import time
+import os
+import random
 import shlex
-import subprocess
 import socket
+import subprocess
+import sys
+import time
 from urllib.error import HTTPError, URLError
-from abc import ABCMeta, abstractmethod
-
 
 from . import g, screen, c, streams, history, content, config, util
 from .commands import lastfm
-
 
 mswin = os.name == "nt"
 not_utf8_environment = mswin or "UTF-8" not in sys.stdout.encoding

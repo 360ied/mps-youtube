@@ -1,14 +1,13 @@
 """
     DOCSTING COMES HERE
 """
-import re
 import math
 
-from .. import c, g, util, content
 from .base import ListViewItem
-from .user import ListUser
 from .livestream import ListLiveStream
 from .songtitle import ListSongtitle
+from .user import ListUser
+from .. import c, util, content
 
 
 class ListView(content.PaginatedContent):

@@ -1,10 +1,11 @@
 import os
-import sys
 import pickle
+import sys
+
+from pafy.backend_shared import extract_video_id
 
 from . import g, c, screen, util
 from .playlist import Playlist, Video
-from pafy.backend_shared import extract_video_id
 
 
 def save():

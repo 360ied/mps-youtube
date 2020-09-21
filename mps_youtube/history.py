@@ -2,9 +2,9 @@ import os
 import pickle
 
 from . import g, c
-from .util import dbg
 from .playlist import Playlist
 from .playlists import read_m3u
+from .util import dbg
 
 
 def add(song):

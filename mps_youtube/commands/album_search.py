@@ -1,17 +1,17 @@
+import difflib
 import re
 import time
-import difflib
-from urllib.request import build_opener
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
+from urllib.request import build_opener
 from xml.etree import ElementTree as ET
 
 import pafy
 
-from .. import c, g, screen, __version__, __url__, content, config, util
 from . import command
-from .songlist import paginatesongs
 from .search import generate_search_qs, get_tracks_from_json
+from .songlist import paginatesongs
+from .. import c, g, screen, __version__, __url__, content, config, util
 
 
 def show_message(message, col=c.r, update=False):

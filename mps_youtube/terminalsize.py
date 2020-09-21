@@ -3,12 +3,12 @@
 """ Terminal Size. """
 
 import os
-import sys
+import platform
 import shlex
 import shutil
 import struct
-import platform
 import subprocess
+import sys
 
 
 def get_terminal_size():

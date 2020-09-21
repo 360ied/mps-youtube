@@ -1,14 +1,15 @@
 """
     Playlist Generation
 """
+import string
 from os import path
 from random import choice
-import string
+
 import pafy
 
+from . import command, search, album_search
 from .. import content, g, playlists, screen, util, listview
 from ..playlist import Playlist
-from . import command, search, album_search
 
 
 @command(r'mkp\s*(.{1,100})', 'mkp')

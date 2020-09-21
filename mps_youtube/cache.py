@@ -6,7 +6,6 @@ import pafy
 from . import g, c, streams
 from .util import dbg
 
-
 # Updated every time incompatible changes are made to cache format,
 # So old cache can be dropped
 CACHE_VERSION = 1

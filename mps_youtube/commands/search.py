@@ -1,11 +1,10 @@
-import re
-import json
-import math
 import base64
+import json
 import logging
-from datetime import datetime, timedelta
-
+import math
+import re
 from argparse import ArgumentParser
+from datetime import datetime, timedelta
 
 parser = ArgumentParser()
 parser.add_argument('-d', '--duration', choices=('any', 'short', 'medium', 'long'))

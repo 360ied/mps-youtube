@@ -1,5 +1,5 @@
-import time
 import threading
+import time
 from urllib.request import urlopen
 
 from . import g, c, screen, config, util

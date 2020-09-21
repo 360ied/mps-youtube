@@ -1,23 +1,22 @@
-import os
-import re
-import sys
-import ctypes
-import logging
-import time
-import subprocess
 import collections
+import ctypes
+import json
+import logging
+import os
+import platform
+import re
+import subprocess
+import sys
+import time
 import unicodedata
 import urllib
-import json
-import platform
 from datetime import datetime, timezone
+from importlib import import_module
 
 import pafy
 
 from . import g, c, terminalsize, description_parser
 from .playlist import Video
-
-from importlib import import_module
 
 macos = platform.system() == "Darwin"
 

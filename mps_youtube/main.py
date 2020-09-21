@@ -20,16 +20,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
 
-import traceback
 import locale
-import sys
 import os
+import sys
+import traceback
 
 import pafy
 
-from . import g, c, commands, screen, history, util
-from . import __version__, playlists, content, listview
+from . import __version__, playlists, content
 from . import config
+from . import g, c, commands, screen, history, util
 
 completer = None
 try:

@@ -1,11 +1,10 @@
 import os
+import re
+import subprocess
 import sys
 import tempfile
-import subprocess
-import re
 
-from .. import g, screen, c, paths, config, util
-
+from .. import g, c, paths, config, util
 from ..player import CmdPlayer
 
 mswin = os.name == "nt"

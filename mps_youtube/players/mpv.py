@@ -1,14 +1,13 @@
-import os
-import sys
-import tempfile
-import subprocess
 import json
+import os
 import re
 import socket
+import subprocess
+import sys
+import tempfile
 import time
 
-from .. import g, screen, c, paths, config, util
-
+from .. import g, c, paths, config, util
 from ..player import CmdPlayer
 
 mswin = os.name == "nt"

@@ -2,8 +2,8 @@ import os
 import subprocess
 
 from .. import config
-
 from ..player import CmdPlayer
+
 
 #
 # This class can be used as a templete for new players

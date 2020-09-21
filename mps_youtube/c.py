@@ -1,6 +1,5 @@
 """ Module for holding colour code values. """
 
-import os
 import re
 import sys
 

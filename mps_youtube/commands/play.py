@@ -1,12 +1,12 @@
+import random
 import sys
 import webbrowser
-import random
 from urllib.error import HTTPError, URLError
 
-from .. import g, c, streams, util, content, config
 from . import command, WORD, RS
-from .songlist import plist
 from .search import yt_url, related
+from .songlist import plist
+from .. import g, c, streams, util, content, config
 
 
 @command(r'play\s+(%s|\d+)' % WORD, 'play')

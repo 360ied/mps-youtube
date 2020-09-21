@@ -1,9 +1,8 @@
-import subprocess
 import os
+import subprocess
 import sys
 
 from . import g, content, config, util
-
 
 mswin = os.name == "nt"
 

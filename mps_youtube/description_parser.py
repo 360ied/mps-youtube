@@ -1,8 +1,9 @@
 """
     Module for trying to parse and retrieve song data from descriptions
 """
-import re
 import random
+import re
+
 import pafy
 
 

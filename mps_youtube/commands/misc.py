@@ -1,9 +1,10 @@
 import re
-from datetime import datetime
 import socket
 import traceback
-from urllib.request import urlopen
+from datetime import datetime
 from urllib.error import HTTPError, URLError
+from urllib.request import urlopen
+
 from .. import player
 
 try:

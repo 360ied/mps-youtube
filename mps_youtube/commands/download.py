@@ -1,17 +1,17 @@
 import os
+import random
 import re
+import shlex
+import subprocess
 import sys
 import time
-import shlex
-import random
-import subprocess
-from urllib.request import urlopen
 from urllib.error import HTTPError
+from urllib.request import urlopen
 
-from .. import g, c, screen, streams, content, config, util
 from . import command, PL
 from .search import yt_url, user_pls
 from .songlist import dump, plist
+from .. import g, c, screen, streams, content, config, util
 
 
 @command(r'(dv|da|d|dl|download)\s*(\d{1,4})', 'da', 'dv', 'd', 'dl', 'download')

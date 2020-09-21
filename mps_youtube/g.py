@@ -1,12 +1,11 @@
 """ Module for holding globals that are needed throught mps-youtube. """
 
+import collections
 import os
 import sys
-import collections
 
 from . import c, paths
 from .playlist import Playlist
-
 
 volume = None
 transcoder_path = "auto"

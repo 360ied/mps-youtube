@@ -1,11 +1,11 @@
+import argparse
+import logging
+import multiprocessing
 import os
+import platform
 import re
 import sys
-import logging
 import tempfile
-import argparse
-import platform
-import multiprocessing
 
 import pafy
 

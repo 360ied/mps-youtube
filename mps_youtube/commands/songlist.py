@@ -3,9 +3,9 @@ import random
 
 import pafy
 
+from . import command, PL
 from .. import g, c, screen, streams, content, util
 from ..playlist import Video
-from . import command, PL
 
 
 def paginatesongs(func, page=0, splash=True, dumps=False,

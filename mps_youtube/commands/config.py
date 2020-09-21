@@ -1,5 +1,5 @@
-from .. import g, c, config, util
 from . import command
+from .. import g, c, config, util
 
 
 @command(r'set|showconfig', 'set', 'showconfig')

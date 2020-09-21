@@ -20,18 +20,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
 
+import copy
 import json
+import os
+import re
 import socket
 import time
-import copy
-import re
-import os
 from threading import Thread
 
 import dbus
 import dbus.service
 from dbus.mainloop.glib import DBusGMainLoop
-
 
 IDENTITY = 'mps-youtube'
 

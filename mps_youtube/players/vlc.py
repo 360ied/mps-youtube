@@ -2,7 +2,6 @@ import os
 import subprocess
 
 from .. import config, util, g
-
 from ..player import CmdPlayer
 
 

@@ -1,12 +1,12 @@
+import copy
+import json
 import os
+import pickle
 import re
 import sys
-import copy
-import pickle
-import json
-from urllib.request import urlopen
 from urllib.error import HTTPError
 from urllib.parse import urlencode
+from urllib.request import urlopen
 
 try:
     import pylast

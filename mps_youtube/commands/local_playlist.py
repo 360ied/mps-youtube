@@ -1,9 +1,9 @@
 import re
 
-from .. import g, c, playlists, content, util
-from ..playlist import Playlist
 from . import command, WORD
 from .songlist import paginatesongs, songlist_rm_add
+from .. import g, c, playlists, content, util
+from ..playlist import Playlist
 
 
 @command(r'rmp\s*(\d+|%s)' % WORD, 'rmp')
