@@ -23,36 +23,38 @@ from .search import generate_search_qs, get_tracks_from_json
 def generate_credentials():
     """Generate the token. Please respect these credentials :)"""
     credentials = oauth2.SpotifyClientCredentials(
-        client_id='6451e12933bb49ed8543d41e3296a88d',
-        client_secret='40ef54678fe441bd9acd66f5d5c34e69')
+        client_id="6451e12933bb49ed8543d41e3296a88d",
+        client_secret="40ef54678fe441bd9acd66f5d5c34e69",
+    )
     return credentials
 
 
 def grab_playlist(spotify, playlist):
-    if '/' in playlist:
-        if playlist.endswith('/'):
+    if "/" in playlist:
+        if playlist.endswith("/"):
             playlist = playlist[:-1]
-        splits = playlist.split('/')
+        splits = playlist.split("/")
     else:
-        splits = playlist.split(':')
+        splits = playlist.split(":")
 
     username = splits[-3]
     playlist_id = splits[-1]
-    results = spotify.user_playlist(username, playlist_id,
-                                    fields='tracks,next,name,owner')
+    results = spotify.user_playlist(
+        username, playlist_id, fields="tracks,next,name,owner"
+    )
 
     all_tracks = []
-    tracks = results['tracks']
+    tracks = results["tracks"]
     while True:
-        for item in tracks['items']:
-            track = item['track']
+        for item in tracks["items"]:
+            track = item["track"]
             try:
                 all_tracks.append(track)
             except KeyError:
                 pass
         # 1 page = 50 results
         # check if there are more pages
-        if tracks['next']:
+        if tracks["next"]:
             tracks = spotify.next(tracks)
         else:
             break
@@ -109,8 +111,7 @@ def _best_song_match(songs, title, duration, titleweight, durationweight):
 
         title_score = seqmatch(None, title.lower(), tit.lower()).ratio()
         duration_score = 1 - variance(duration, dur)
-        util.dbg("Title score: %s, Duration score: %s", title_score,
-                 duration_score)
+        util.dbg("Title score: %s, Duration score: %s", title_score, duration_score)
 
         # apply weightings
         score = duration_score * durationweight + title_score * titleweight
@@ -128,39 +129,40 @@ def _match_tracks(tracks):
 
     def dtime(x):
         """ Format time to M:S. """
-        return time.strftime('%M:%S', time.gmtime(int(x)))
+        return time.strftime("%M:%S", time.gmtime(int(x)))
 
     # do matching
     for track in tracks:
-        ttitle = track['name']
-        artist = track['artists'][0]['name']
-        length = track['duration_ms'] / 1000
-        util.xprint("Search :  %s%s - %s%s - %s" % (c.y, artist, ttitle, c.w,
-                                                    dtime(length)))
+        ttitle = track["name"]
+        artist = track["artists"][0]["name"]
+        length = track["duration_ms"] / 1000
+        util.xprint(
+            "Search :  %s%s - %s%s - %s" % (c.y, artist, ttitle, c.w, dtime(length))
+        )
         q = "%s %s" % (artist, ttitle)
         w = q = ttitle if artist == "Various Artists" else q
         query = generate_search_qs(w, 0)
         util.dbg(query)
 
         # perform fetch
-        wdata = pafy.call_gdata('search', query)
+        wdata = pafy.call_gdata("search", query)
         results = get_tracks_from_json(wdata)
 
         if not results:
             util.xprint(c.r + "Nothing matched :(\n" + c.w)
             continue
 
-        s, score = _best_song_match(
-            results, artist + " " + ttitle, length, .5, .5)
+        s, score = _best_song_match(results, artist + " " + ttitle, length, 0.5, 0.5)
         cc = c.g if score > 85 else c.y
         cc = c.r if score < 75 else cc
-        util.xprint("Matched:  %s%s%s - %s \n[%sMatch confidence: "
-                    "%s%s]\n" % (c.y, s.title, c.w, util.fmt_time(s.length),
-                                 cc, score, c.w))
+        util.xprint(
+            "Matched:  %s%s%s - %s \n[%sMatch confidence: "
+            "%s%s]\n" % (c.y, s.title, c.w, util.fmt_time(s.length), cc, score, c.w)
+        )
         yield s
 
 
-@command(r'suser\s*(.*[-_a-zA-Z0-9].*)?', 'suser')
+@command(r"suser\s*(.*[-_a-zA-Z0-9].*)?", "suser")
 def search_user(term):
     """Search for Spotify user playlists. """
     # pylint: disable=R0914,R0912
@@ -186,15 +188,15 @@ def search_user(term):
         g.content = "Playlists:\n"
 
         while True:
-            for playlist in playlists['items']:
-                if playlist['name'] is not None:
-                    g.content += (u'{0:>2}. {1:<30}  ({2} tracks)'.format(
-                        check, playlist['name'],
-                        playlist['tracks']['total']))
+            for playlist in playlists["items"]:
+                if playlist["name"] is not None:
+                    g.content += u"{0:>2}. {1:<30}  ({2} tracks)".format(
+                        check, playlist["name"], playlist["tracks"]["total"]
+                    )
                     g.content += "\n"
                     links.append(playlist)
                     check += 1
-            if playlists['next']:
+            if playlists["next"]:
                 playlists = spotify.next(playlists)
             else:
                 break
@@ -205,14 +207,14 @@ def search_user(term):
         choice = int(input("> "))
         playlist = links[choice - 1]
 
-        search_playlist(playlist['external_urls']['spotify'], spotify=spotify)
+        search_playlist(playlist["external_urls"]["spotify"], spotify=spotify)
 
     else:
         g.message = "spotipy module must be installed for Spotify support\n"
         g.message += "see https://pypi.python.org/pypi/spotipy/"
 
 
-@command(r'splaylist\s*(.*[-_a-zA-Z0-9].*)?', 'splaylist')
+@command(r"splaylist\s*(.*[-_a-zA-Z0-9].*)?", "splaylist")
 def search_playlist(term, spotify=None):
     """Search for Spotify playlist. """
     # pylint: disable=R0914,R0912
@@ -241,16 +243,28 @@ def search_playlist(term, spotify=None):
             show_message("Playlist '%s' not found!" % term)
             return
 
-        if not playlist['tracks']['total']:
-            show_message("Playlist '%s' by '%s' has 0 tracks!" % (playlist['name'], playlist['owner']['id']))
+        if not playlist["tracks"]["total"]:
+            show_message(
+                "Playlist '%s' by '%s' has 0 tracks!"
+                % (playlist["name"], playlist["owner"]["id"])
+            )
             return
 
-        msg = "%s%s%s by %s%s%s\n\n" % (c.g, playlist['name'], c.w, c.g, playlist['owner']['id'], c.w)
+        msg = "%s%s%s by %s%s%s\n\n" % (
+            c.g,
+            playlist["name"],
+            c.w,
+            c.g,
+            playlist["owner"]["id"],
+            c.w,
+        )
         msg += "Enter to begin matching or [q] to abort"
         g.message = msg
         g.content = "Tracks:\n"
         for n, track in enumerate(tracks, 1):
-            trackname = '{0:<20} - {1}'.format(track['artists'][0]['name'], track['name'])
+            trackname = "{0:<20} - {1}".format(
+                track["artists"][0]["name"], track["name"]
+            )
             g.content += "%03s  %s" % (n, trackname)
             g.content += "\n"
 
@@ -286,8 +300,16 @@ def search_playlist(term, spotify=None):
             input("Press Enter to continue")
 
         msg = "Contents of playlist %s%s - %s%s %s(%d/%d)%s:" % (
-            c.y, playlist['owner']['id'], playlist['name'], c.w, c.b, len(songs), len(tracks), c.w)
-        failmsg = "Found no playlist tracks for %s%s%s" % (c.y, playlist['name'], c.w)
+            c.y,
+            playlist["owner"]["id"],
+            playlist["name"],
+            c.w,
+            c.b,
+            len(songs),
+            len(tracks),
+            c.w,
+        )
+        failmsg = "Found no playlist tracks for %s%s%s" % (c.y, playlist["name"], c.w)
 
         paginatesongs(songs, msg=msg, failmsg=failmsg)
 

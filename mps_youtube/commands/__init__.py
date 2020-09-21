@@ -4,12 +4,12 @@ import re
 from .. import g
 from ..main import completer
 
-Command = collections.namedtuple('Command', 'regex category usage function')
+Command = collections.namedtuple("Command", "regex category usage function")
 
 # input types
-WORD = r'[^\W\d][-\w\s]{,100}'
-RS = r'(?:(?:repeat|shuffle|-[avfw])\s*)'
-PL = r'\S*?((?:RD|PL|LL|UU|FL|OL)[-_0-9a-zA-Z]+)\s*'
+WORD = r"[^\W\d][-\w\s]{,100}"
+RS = r"(?:(?:repeat|shuffle|-[avfw])\s*)"
+PL = r"\S*?((?:RD|PL|LL|UU|FL|OL)[-_0-9a-zA-Z]+)\s*"
 
 
 ## @command decorator
@@ -37,5 +37,13 @@ def command(regex, *commands):
 
 
 # Placed at bottom to deal with cyclic imports
-from . import download, search, album_search, spotify_playlist, misc, config, local_playlist
+from . import (
+    download,
+    search,
+    album_search,
+    spotify_playlist,
+    misc,
+    config,
+    local_playlist,
+)
 from . import play, songlist, generate_playlist, lastfm

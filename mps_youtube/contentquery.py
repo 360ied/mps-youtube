@@ -14,6 +14,7 @@ class ContentQuery:
     """ A wrapper for pafy.call_gdata. I lets you treat a search as a list,
         but the results will only be fetched when needed.
     """
+
     maxresults = 0
     pdata = []
     nextpagetoken = None
@@ -53,10 +54,11 @@ class ContentQuery:
 
     def _perform_api_call(self):
         # Include nextPageToken if it is set
-        qry = dict(
-            pageToken=self.nextpagetoken,
-            **(self.queries)
-        ) if self.nextpagetoken else self.queries
+        qry = (
+            dict(pageToken=self.nextpagetoken, **(self.queries))
+            if self.nextpagetoken
+            else self.queries
+        )
 
         # Run query
         util.dbg("CQ.query", qry)

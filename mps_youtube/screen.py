@@ -19,9 +19,9 @@ def update(fill_blank=True):
         g.content = False
 
     if g.message or g.rprompt:
-        out = g.message or ''
-        blanks = util.getxy().width - len(out) - len(g.rprompt or '')
-        out += ' ' * blanks + (g.rprompt or '')
+        out = g.message or ""
+        blanks = util.getxy().width - len(out) - len(g.rprompt or "")
+        out += " " * blanks + (g.rprompt or "")
         util.xprint(out)
 
     elif fill_blank:
@@ -33,9 +33,9 @@ def update(fill_blank=True):
 def clear():
     """Clear all text from screen."""
     if g.no_clear_screen:
-        util.xprint('--\n')
+        util.xprint("--\n")
     else:
-        util.xprint('\n' * 200)
+        util.xprint("\n" * 200)
 
 
 def reset_terminal():
@@ -57,8 +57,8 @@ def _writeline(text):
     if mswin:
         # Avoids creating new line every time it is run
         # TODO: Figure out why this is needed
-        spaces = - 1
-    text = text[:width - 3]
+        spaces = -1
+    text = text[: width - 3]
     sys.stdout.write(" " + text + (" " * spaces) + "\r")
     sys.stdout.flush()
 

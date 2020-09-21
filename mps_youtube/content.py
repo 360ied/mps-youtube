@@ -51,7 +51,7 @@ class StringContent(LineContent):
         self._lines = string.splitlines()
 
     def get_text(self, s, e):
-        return '\n'.join(self._lines[s:e])
+        return "\n".join(self._lines[s:e])
 
     def get_count(self):
         width = getxy().width
@@ -69,10 +69,12 @@ def page_msg(page=0):
     if page_count > 1:
         pagemsg = "{}{}/{}{}"
         # start_index = max_results * g.current_page
-        return pagemsg.format('<' if page > 0 else '[',
-                              "%s%s%s" % (c.y, page + 1, c.w),
-                              page_count,
-                              '>' if page + 1 < page_count else ']')
+        return pagemsg.format(
+            "<" if page > 0 else "[",
+            "%s%s%s" % (c.y, page + 1, c.w),
+            page_count,
+            ">" if page + 1 < page_count else "]",
+        )
     return None
 
 
@@ -98,37 +100,43 @@ def generate_songlist_display(song=False, zeromsg=None):
     reserved = 9 + lengthsize + len(user_columns)
     cw = getxy().width
     cw -= 1
-    title_size = cw - sum(1 + x['size'] for x in user_columns) - reserved
-    before = [{"name": "idx", "size": 3, "heading": "Num"},
-              {"name": "title", "size": title_size, "heading": "Title"}]
+    title_size = cw - sum(1 + x["size"] for x in user_columns) - reserved
+    before = [
+        {"name": "idx", "size": 3, "heading": "Num"},
+        {"name": "title", "size": title_size, "heading": "Title"},
+    ]
     after = [{"name": "length", "size": lengthsize, "heading": "Length"}]
     columns = before + user_columns + after
 
     for n, column in enumerate(columns):
-        column['idx'] = n
-        column['sign'] = "-" if not column['name'] == "length" else ""
+        column["idx"] = n
+        column["sign"] = "-" if not column["name"] == "length" else ""
 
-    fmt = ["%{}{}s  ".format(x['sign'], x['size']) for x in columns]
+    fmt = ["%{}{}s  ".format(x["sign"], x["size"]) for x in columns]
     fmtrow = fmt[0:1] + ["%s  "] + fmt[2:]
     fmt, fmtrow = "".join(fmt).strip(), "".join(fmtrow).strip()
-    titles = tuple([x['heading'][:x['size']] for x in columns])
+    titles = tuple([x["heading"][: x["size"]] for x in columns])
     hrow = c.ul + fmt % titles + c.w
     out = "\n" + hrow + "\n"
 
     for n, x in enumerate(g.model[:max_results]):
         col = (c.r if n % 2 == 0 else c.p) if not song else c.b
-        details = {'title': x.title, "length": fmt_time(x.length)}
+        details = {"title": x.title, "length": fmt_time(x.length)}
         details = copy.copy(g.meta[x.ytid]) if have_meta else details
-        otitle = details['title']
-        details['idx'] = "%2d" % (n + 1)
-        details['title'] = uea_pad(columns[1]['size'], otitle)
-        cat = details.get('category') or '-'
-        details['category'] = pafy.get_categoryname(cat)
-        details['ytid'] = x.ytid
-        line = ''
+        otitle = details["title"]
+        details["idx"] = "%2d" % (n + 1)
+        details["title"] = uea_pad(columns[1]["size"], otitle)
+        cat = details.get("category") or "-"
+        details["category"] = pafy.get_categoryname(cat)
+        details["ytid"] = x.ytid
+        line = ""
 
         for z in columns:
-            fieldsize, field, direction = z['size'], z['name'], "<" if z['sign'] == "-" else ">"
+            fieldsize, field, direction = (
+                z["size"],
+                z["name"],
+                "<" if z["sign"] == "-" else ">",
+            )
             line += uea_pad(fieldsize, details[field], direction)
             if not columns[-1] == z:
                 line += "  "
@@ -155,14 +163,14 @@ def generate_playlist_display():
     out = "\n" + fmthd % head
 
     for n, x in enumerate(g.ytpls):
-        col = (c.g if n % 2 == 0 else c.w)
-        length = x.get('size') or "?"
+        col = c.g if n % 2 == 0 else c.w
+        length = x.get("size") or "?"
         length = "%4s" % length
-        title = x.get('title') or "unknown"
-        author = x.get('author') or "unknown"
-        updated = yt_datetime(x.get('updated'))[1]
+        title = x.get("title") or "unknown"
+        author = x.get("author") or "unknown"
+        updated = yt_datetime(x.get("updated"))[1]
         title = uea_pad(cw - 36, title)
-        out += (fmtrow % (col, str(n + 1), title, author[:12], updated, str(length), c.w))
+        out += fmtrow % (col, str(n + 1), title, author[:12], updated, str(length), c.w)
 
     return out + "\n" * (5 - len(g.ytpls))
 
@@ -173,16 +181,18 @@ def _get_user_columns():
     user_columns = config.COLUMNS.get
     user_columns = user_columns.replace(",", " ").split()
 
-    defaults = {"views": dict(name="viewCount", size=4, heading="View"),
-                "rating": dict(name="rating", size=4, heading="Rtng"),
-                "comments": dict(name="commentCount", size=4, heading="Comm"),
-                "date": dict(name="uploaded", size=8, heading="Date"),
-                "time": dict(name="uploadedTime", size=11, heading="Time"),
-                "user": dict(name="uploaderName", size=10, heading="User"),
-                "likes": dict(name="likes", size=4, heading="Like"),
-                "dislikes": dict(name="dislikes", size=4, heading="Dslk"),
-                "category": dict(name="category", size=8, heading="Category"),
-                "ytid": dict(name="ytid", size=12, heading="Video ID")}
+    defaults = {
+        "views": dict(name="viewCount", size=4, heading="View"),
+        "rating": dict(name="rating", size=4, heading="Rtng"),
+        "comments": dict(name="commentCount", size=4, heading="Comm"),
+        "date": dict(name="uploaded", size=8, heading="Date"),
+        "time": dict(name="uploadedTime", size=11, heading="Time"),
+        "user": dict(name="uploaderName", size=10, heading="User"),
+        "likes": dict(name="likes", size=4, heading="Like"),
+        "dislikes": dict(name="dislikes", size=4, heading="Dslk"),
+        "category": dict(name="category", size=8, heading="Category"),
+        "ytid": dict(name="ytid", size=12, heading="Video ID"),
+    }
 
     ret = []
     for column in user_columns:
@@ -191,7 +201,7 @@ def _get_user_columns():
 
         if name in defaults:
             z = defaults[name]
-            nm, sz, hd = z['name'], z['size'], z['heading']
+            nm, sz, hd = z["name"], z["size"], z["heading"]
 
             if len(namesize) == 2 and namesize[1].isdigit():
                 sz = int(namesize[1])
@@ -241,8 +251,10 @@ def playlists_display():
 
     for v, z in enumerate(sorted(g.userpl)):
         n, p = z, g.userpl[z]
-        l = fmt % (start, c.g, v + 1, n, c.w, c.y, str(len(p)), c.y,
-                   p.duration, c.w) + "\n"
+        l = (
+            fmt % (start, c.g, v + 1, n, c.w, c.y, str(len(p)), c.y, p.duration, c.w)
+            + "\n"
+        )
         out += l
 
     return out

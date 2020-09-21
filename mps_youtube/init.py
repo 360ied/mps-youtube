@@ -91,6 +91,7 @@ def init():
     if config.MPRIS.get:
         try:
             from . import mpris
+
             conn1, conn2 = multiprocessing.Pipe()
             g.mprisctl = mpris.MprisConnection(conn1)
             t = multiprocessing.Process(target=mpris.main, args=(conn2,))
@@ -185,16 +186,16 @@ command: ENCODER_PATH -i IN -codec:a wmav2 -q:a 0 OUT.EXT"""
                 g.delete_orig = do
 
             elif line.startswith("name:"):
-                e['name'] = re.match("name:(.*)", line).group(1).strip()
+                e["name"] = re.match("name:(.*)", line).group(1).strip()
 
             elif line.startswith("extension:"):
-                e['ext'] = re.match("extension:(.*)", line).group(1).strip()
+                e["ext"] = re.match("extension:(.*)", line).group(1).strip()
 
             elif line.startswith("valid for:"):
-                e['valid'] = re.match("valid for:(.*)", line).group(1).strip()
+                e["valid"] = re.match("valid for:(.*)", line).group(1).strip()
 
             elif line.startswith("command:"):
-                e['command'] = re.match("command:(.*)", line).group(1).strip()
+                e["command"] = re.match("command:(.*)", line).group(1).strip()
 
                 if "name" in e and "ext" in e and "valid" in e:
                     g.encoders.append(e)
@@ -218,21 +219,21 @@ def _process_cl_args():
     """ Process command line arguments. """
 
     parser = argparse.ArgumentParser(add_help=False)
-    parser.add_argument('commands', nargs='*')
-    parser.add_argument('--help', '-h', action='store_true')
-    parser.add_argument('--version', '-v', action='store_true')
-    parser.add_argument('--debug', '-d', action='store_true')
-    parser.add_argument('--logging', '-l', action='store_true')
-    parser.add_argument('--no-autosize', action='store_true')
-    parser.add_argument('--no-preload', action='store_true')
-    parser.add_argument('--no-textart', action='store_true')
+    parser.add_argument("commands", nargs="*")
+    parser.add_argument("--help", "-h", action="store_true")
+    parser.add_argument("--version", "-v", action="store_true")
+    parser.add_argument("--debug", "-d", action="store_true")
+    parser.add_argument("--logging", "-l", action="store_true")
+    parser.add_argument("--no-autosize", action="store_true")
+    parser.add_argument("--no-preload", action="store_true")
+    parser.add_argument("--no-textart", action="store_true")
     args = parser.parse_args()
 
     if args.version:
         screen.msgexit(_get_version_info())
 
     elif args.help:
-        screen.msgexit('\n'.join(i[2] for i in helptext()))
+        screen.msgexit("\n".join(i[2] for i in helptext()))
 
     if args.debug or os.environ.get("mpsytdebug") == "1":
         xprint(_get_version_info())
@@ -264,10 +265,11 @@ def _get_version_info():
     """ Return version and platform info. """
     pafy_version = pafy.__version__
     youtube_dl_version = None
-    if tuple(map(int, pafy_version.split('.'))) >= (0, 5, 0):
+    if tuple(map(int, pafy_version.split("."))) >= (0, 5, 0):
         pafy_version += " (" + pafy.backend + " backend)"
         if pafy.backend == "youtube-dl":
             import youtube_dl
+
             youtube_dl_version = youtube_dl.version.__version__
 
     out = "mpsyt version      : " + __version__

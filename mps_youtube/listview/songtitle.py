@@ -5,6 +5,7 @@ from .. import util as u
 class ListSongtitle(ListViewItem):
     """ Describes a user
     """
+
     # pylint: disable=unused-argument
     _checked = False
     _certainty = 1.0

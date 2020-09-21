@@ -18,8 +18,7 @@ class mpv(CmdPlayer):
     def __init__(self, player):
         self.player = player
         self.mpv_version = _get_mpv_version(player)
-        self.mpv_options = subprocess.check_output(
-            [player, "--list-options"]).decode()
+        self.mpv_options = subprocess.check_output([player, "--list-options"]).decode()
 
         self.mpv_usesock = ""
         if not mswin:
@@ -39,13 +38,13 @@ class mpv(CmdPlayer):
 
         args = config.PLAYERARGS.get.strip().split()
 
-        pd = g.playerargs_defaults['mpv']
+        pd = g.playerargs_defaults["mpv"]
         # Use new mpv syntax
         # https://github.com/mps-youtube/mps-youtube/issues/1052
-        completetitle = '='.join((pd["title"], '"{0}"'.format(self.song.title)))
+        completetitle = "=".join((pd["title"], '"{0}"'.format(self.song.title)))
         util.list_update(completetitle, args)
 
-        if pd['geo'] not in args:
+        if pd["geo"] not in args:
             geometry = config.WINDOW_SIZE.get or ""
 
             if config.WINDOW_POS.get:
@@ -57,19 +56,20 @@ class mpv(CmdPlayer):
             if geometry:
                 # Use new mpv syntax
                 # See: https://github.com/mps-youtube/mps-youtube/issues/1052
-                newgeometry = '='.join((pd['geo'], geometry))
+                newgeometry = "=".join((pd["geo"], geometry))
                 util.list_update(newgeometry, args)
 
         # handle no audio stream available
         if self.override == "a-v":
             util.list_update(pd["novid"], args)
 
-        elif ((config.FULLSCREEN.get and self.override != "window")
-              or self.override == "fullscreen"):
+        elif (
+            config.FULLSCREEN.get and self.override != "window"
+        ) or self.override == "fullscreen":
             util.list_update(pd["fs"], args)
 
         # prevent ffmpeg issue (https://github.com/mpv-player/mpv/issues/579)
-        if not self.video and self.stream['ext'] == "m4a":
+        if not self.video and self.stream["ext"] == "m4a":
             util.dbg("%susing ignidx flag%s")
             util.list_update(pd["ignidx"], args)
 
@@ -94,7 +94,7 @@ class mpv(CmdPlayer):
         if self.softrepeat:
             util.list_update("--loop-file", args)
 
-        return [self.player] + args + [self.stream['url']]
+        return [self.player] + args + [self.stream["url"]]
 
     def clean_up(self):
         if self.input_file:
@@ -108,28 +108,29 @@ class mpv(CmdPlayer):
 
     def launch_player(self, cmd):
         self.input_file = _get_input_file()
-        cmd.append('--input-conf=' + self.input_file)
+        cmd.append("--input-conf=" + self.input_file)
         self.sockpath = None
         self.fifopath = None
 
         if self.mpv_usesock:
-            self.sockpath = tempfile.mktemp('.sock', 'mpsyt-mpv')
-            cmd.append(self.mpv_usesock + '=' + self.sockpath)
+            self.sockpath = tempfile.mktemp(".sock", "mpsyt-mpv")
+            cmd.append(self.mpv_usesock + "=" + self.sockpath)
 
             with open(os.devnull, "w") as devnull:
                 self.p = subprocess.Popen(cmd, shell=False, stderr=devnull)
 
             if g.mprisctl:
-                g.mprisctl.send(('socket', self.sockpath))
+                g.mprisctl.send(("socket", self.sockpath))
         else:
             if g.mprisctl:
-                self.fifopath = tempfile.mktemp('.fifo', 'mpsyt-mpv')
+                self.fifopath = tempfile.mktemp(".fifo", "mpsyt-mpv")
                 os.mkfifo(self.fifopath)
-                cmd.append('--input-file=' + self.fifopath)
-                g.mprisctl.send(('mpv-fifo', self.fifopath))
+                cmd.append("--input-file=" + self.fifopath)
+                g.mprisctl.send(("mpv-fifo", self.fifopath))
 
-            self.p = subprocess.Popen(cmd, shell=False, stderr=subprocess.PIPE,
-                                      bufsize=1)
+            self.p = subprocess.Popen(
+                cmd, shell=False, stderr=subprocess.PIPE, bufsize=1
+            )
 
         self._player_status(self.songdata + "; ", self.song.length)
         returncode = self.p.wait()
@@ -149,7 +150,7 @@ class mpv(CmdPlayer):
         re_player = re.compile(r".{,15}AV?:\s*(\d\d):(\d\d):(\d\d)")
         re_volume = re.compile(r"Volume:\s*(?P<volume>\d+)\s*%")
         last_displayed_line = None
-        buff = ''
+        buff = ""
         volume_level = None
         last_pos = None
 
@@ -158,7 +159,7 @@ class mpv(CmdPlayer):
 
             tries = 0
             while tries < 10 and self.p.poll() is None:
-                time.sleep(.5)
+                time.sleep(0.5)
                 try:
                     s.connect(self.sockpath)
                     break
@@ -171,30 +172,31 @@ class mpv(CmdPlayer):
             try:
                 observe_full = False
                 cmd = {"command": ["observe_property", 1, "time-pos"]}
-                s.send(json.dumps(cmd).encode() + b'\n')
+                s.send(json.dumps(cmd).encode() + b"\n")
                 volume_level = elapsed_s = None
 
                 for line in s.makefile():
                     resp = json.loads(line)
 
                     # deals with bug in mpv 0.7 - 0.7.3
-                    if resp.get('event') == 'property-change' and not observe_full:
+                    if resp.get("event") == "property-change" and not observe_full:
                         cmd = {"command": ["observe_property", 2, "volume"]}
-                        s.send(json.dumps(cmd).encode() + b'\n')
+                        s.send(json.dumps(cmd).encode() + b"\n")
                         observe_full = True
 
-                    if resp.get('event') == 'property-change' and resp['id'] == 1:
-                        if resp['data'] is not None:
-                            elapsed_s = int(resp['data'])
+                    if resp.get("event") == "property-change" and resp["id"] == 1:
+                        if resp["data"] is not None:
+                            elapsed_s = int(resp["data"])
 
-                    elif resp.get('event') == 'property-change' and resp['id'] == 2:
-                        volume_level = int(resp['data'])
+                    elif resp.get("event") == "property-change" and resp["id"] == 2:
+                        volume_level = int(resp["data"])
 
-                    if (volume_level and volume_level != g.volume):
+                    if volume_level and volume_level != g.volume:
                         g.volume = volume_level
                     if elapsed_s:
-                        self.make_status_line(elapsed_s, prefix, songlength,
-                                              volume=volume_level)
+                        self.make_status_line(
+                            elapsed_s, prefix, songlength, volume=volume_level
+                        )
 
             except socket.error:
                 pass
@@ -206,7 +208,7 @@ class mpv(CmdPlayer):
                 stdstream = self.p.stderr
                 char = stdstream.read(1).decode("utf-8", errors="ignore")
 
-                if char in '\r\n':
+                if char in "\r\n":
 
                     mv = re_volume.search(buff)
 
@@ -224,28 +226,28 @@ class mpv(CmdPlayer):
                         except ValueError:
 
                             try:
-                                elapsed_s = int(match_object.group('elapsed_s')
-                                                or '0')
+                                elapsed_s = int(match_object.group("elapsed_s") or "0")
 
                             except ValueError:
                                 continue
 
                         if volume_level and volume_level != g.volume:
                             g.volume = volume_level
-                        self.make_status_line(elapsed_s, prefix, songlength,
-                                              volume=volume_level)
+                        self.make_status_line(
+                            elapsed_s, prefix, songlength, volume=volume_level
+                        )
 
-                    if buff.startswith('ANS_volume='):
-                        volume_level = round(float(buff.split('=')[1]))
+                    if buff.startswith("ANS_volume="):
+                        volume_level = round(float(buff.split("=")[1]))
 
                     paused = ("PAUSE" in buff) or ("Paused" in buff)
                     if (elapsed_s != last_pos or paused) and g.mprisctl:
                         last_pos = elapsed_s
-                        g.mprisctl.send(('pause', paused))
-                        g.mprisctl.send(('volume', volume_level))
-                        g.mprisctl.send(('time-pos', elapsed_s))
+                        g.mprisctl.send(("pause", paused))
+                        g.mprisctl.send(("volume", volume_level))
+                        g.mprisctl.send(("time-pos", elapsed_s))
 
-                    buff = ''
+                    buff = ""
 
                 else:
                     buff += char
@@ -276,7 +278,7 @@ def _get_input_file():
 
     Return file name of temp input file with mpsyt mappings included
     """
-    confpath = conf = ''
+    confpath = conf = ""
 
     confpath = os.path.join(paths.get_config_dir(), "mpv-input.conf")
 
@@ -284,15 +286,21 @@ def _get_input_file():
         util.dbg("using %s for input key file", confpath)
 
         with open(confpath) as conffile:
-            conf = conffile.read() + '\n'
+            conf = conffile.read() + "\n"
 
     conf = conf.replace("quit", "quit 43")
     conf = conf.replace("playlist_prev", "quit 42")
     conf = conf.replace("pt_step -1", "quit 42")
     conf = conf.replace("playlist_next", "quit")
     conf = conf.replace("pt_step 1", "quit")
-    standard_cmds = ['q quit 43\n', '> quit\n', '< quit 42\n', 'NEXT quit\n',
-                     'PREV quit 42\n', 'ENTER quit\n']
+    standard_cmds = [
+        "q quit 43\n",
+        "> quit\n",
+        "< quit 42\n",
+        "NEXT quit\n",
+        "PREV quit 42\n",
+        "ENTER quit\n",
+    ]
     bound_keys = [i.split()[0] for i in conf.splitlines() if i.split()]
 
     for i in standard_cmds:
@@ -301,8 +309,9 @@ def _get_input_file():
         if key not in bound_keys:
             conf += i
 
-    with tempfile.NamedTemporaryFile('w', prefix='mpsyt-input',
-                                     delete=False) as tmpfile:
+    with tempfile.NamedTemporaryFile(
+        "w", prefix="mpsyt-input", delete=False
+    ) as tmpfile:
         tmpfile.write(conf)
         return tmpfile.name
 

@@ -38,9 +38,9 @@ try:
     readline.set_history_length(2000)
     has_readline = True
     completer = util.CommandCompleter()
-    readline.parse_and_bind('tab: complete')
+    readline.parse_and_bind("tab: complete")
     readline.set_completer(completer.complete_command)
-    readline.set_completer_delims('')
+    readline.set_completer_delims("")
 
 except ImportError:
     has_readline = False
@@ -71,24 +71,22 @@ def matchfunction(func, regex, userinput):
 
         except IndexError:
             if g.debug_mode:
-                g.content = ''.join(traceback.format_exception(
-                    *sys.exc_info()))
-            g.message = util.F('invalid range')
+                g.content = "".join(traceback.format_exception(*sys.exc_info()))
+            g.message = util.F("invalid range")
             g.content = g.content or content.generate_songlist_display()
 
         except (ValueError, IOError) as e:
             if g.debug_mode:
-                g.content = ''.join(traceback.format_exception(
-                    *sys.exc_info()))
-            g.message = util.F('cant get track') % str(e)
-            g.content = g.content or \
-                        content.generate_songlist_display(zeromsg=g.message)
+                g.content = "".join(traceback.format_exception(*sys.exc_info()))
+            g.message = util.F("cant get track") % str(e)
+            g.content = g.content or content.generate_songlist_display(
+                zeromsg=g.message
+            )
 
         except pafy.GdataError as e:
             if g.debug_mode:
-                g.content = ''.join(traceback.format_exception(
-                    *sys.exc_info()))
-            g.message = util.F('no data') % e
+                g.content = "".join(traceback.format_exception(*sys.exc_info()))
+            g.message = util.F("no data") % e
             g.content = g.content
 
         return True

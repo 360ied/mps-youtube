@@ -8,8 +8,16 @@ from .. import g, c, screen, streams, content, util
 from ..playlist import Video
 
 
-def paginatesongs(func, page=0, splash=True, dumps=False,
-                  length=None, msg=None, failmsg=None, loadmsg=None):
+def paginatesongs(
+    func,
+    page=0,
+    splash=True,
+    dumps=False,
+    length=None,
+    msg=None,
+    failmsg=None,
+    loadmsg=None,
+):
     """
     A utility function for handling lists of songs, so that
     the pagination and the dump command will work properly.
@@ -37,7 +45,7 @@ def paginatesongs(func, page=0, splash=True, dumps=False,
     :type loadmsg: str
     """
     if splash:
-        g.message = loadmsg or ''
+        g.message = loadmsg or ""
         g.content = content.logo(col=c.b)
         screen.update()
 
@@ -58,8 +66,13 @@ def paginatesongs(func, page=0, splash=True, dumps=False,
     if length is None:
         length = len(func)
 
-    args = {'func': func, 'length': length, 'msg': msg,
-            'failmsg': failmsg, 'loadmsg': loadmsg}
+    args = {
+        "func": func,
+        "length": length,
+        "msg": msg,
+        "failmsg": failmsg,
+        "loadmsg": loadmsg,
+    }
     g.last_search_query = (paginatesongs, args)
     g.browse_mode = "normal"
     g.current_page = page
@@ -67,7 +80,7 @@ def paginatesongs(func, page=0, splash=True, dumps=False,
     g.model.songs = songs
     g.content = content.generate_songlist_display()
     g.last_opened = ""
-    g.message = msg or ''
+    g.message = msg or ""
     if not songs:
         g.message = failmsg or g.message
 
@@ -76,7 +89,7 @@ def paginatesongs(func, page=0, splash=True, dumps=False,
         streams.preload(songs[0], delay=0)
 
 
-@command(r'pl\s+%s' % PL, 'pl')
+@command(r"pl\s+%s" % PL, "pl")
 def plist(parturl):
     """ Retrieve YouTube playlist. """
 
@@ -96,7 +109,7 @@ def plist(parturl):
     paginatesongs(pl_seg, length=len(ytpl), msg=msg, loadmsg=loadmsg)
 
 
-@command(r'(rm|add)\s*(-?\d[-,\d\s]{,250})', 'rm', 'add')
+@command(r"(rm|add)\s*(-?\d[-,\d\s]{,250})", "rm", "add")
 def songlist_rm_add(action, songrange):
     """ Remove or add tracks. works directly on user input. """
     selection = util.parse_multi(songrange)
@@ -109,11 +122,11 @@ def songlist_rm_add(action, songrange):
             g.active.songs.append(g.model[songnum - 1])
 
         d = g.active.duration
-        g.message = util.F('added to pl') % (len(selection), len(g.active), d)
+        g.message = util.F("added to pl") % (len(selection), len(g.active), d)
         if duplicate_songs:
-            duplicate_songs = ', '.join(sorted(duplicate_songs))
-            g.message += '\n'
-            g.message += util.F('duplicate tracks') % duplicate_songs
+            duplicate_songs = ", ".join(sorted(duplicate_songs))
+            g.message += "\n"
+            g.message += util.F("duplicate tracks") % duplicate_songs
 
     elif action == "rm":
         selection = sorted(set(selection), reverse=True)
@@ -126,28 +139,28 @@ def songlist_rm_add(action, songrange):
             except IndexError:
                 pass
 
-        g.message = util.F('songs rm') % (len(selection), removed)
+        g.message = util.F("songs rm") % (len(selection), removed)
 
     g.content = content.generate_songlist_display()
 
 
-@command(r'(mv|sw)\s*(\d{1,4})\s*[\s,]\s*(\d{1,4})', 'mv', 'sw')
+@command(r"(mv|sw)\s*(\d{1,4})\s*[\s,]\s*(\d{1,4})", "mv", "sw")
 def songlist_mv_sw(action, a, b):
     """ Move a song or swap two songs. """
     i, j = int(a) - 1, int(b) - 1
 
     if action == "mv":
         g.model.songs.insert(j, g.model.songs.pop(i))
-        g.message = util.F('song move') % (g.model[j].title, b)
+        g.message = util.F("song move") % (g.model[j].title, b)
 
     elif action == "sw":
         g.model[i], g.model[j] = g.model[j], g.model[i]
-        g.message = util.F('song sw') % (min(a, b), max(a, b))
+        g.message = util.F("song sw") % (min(a, b), max(a, b))
 
     g.content = content.generate_songlist_display()
 
 
-@command(r'(n|p)\s*(\d{1,2})?')
+@command(r"(n|p)\s*(\d{1,2})?")
 def nextprev(np, page=None):
     """ Get next / previous search results. """
     if isinstance(g.content, content.PaginatedContent):
@@ -187,7 +200,7 @@ def nextprev(np, page=None):
     return good
 
 
-@command(r'(un)?dump', 'dump', 'undump')
+@command(r"(un)?dump", "dump", "undump")
 def dump(un):
     """ Show entire playlist. """
     func, args = g.last_search_query
@@ -202,7 +215,7 @@ def dump(un):
         g.content = content.generate_songlist_display()
 
 
-@command(r'shuffle', 'shuffle')
+@command(r"shuffle", "shuffle")
 def shuffle_fn():
     """ Shuffle displayed items. """
     random.shuffle(g.model.songs)
@@ -210,7 +223,7 @@ def shuffle_fn():
     g.content = content.generate_songlist_display()
 
 
-@command(r'reverse', 'reverse')
+@command(r"reverse", "reverse")
 def reverse_songs():
     """ Reverse order of displayed items. """
     g.model.songs = g.model.songs[::-1]
@@ -218,28 +231,28 @@ def reverse_songs():
     g.content = content.generate_songlist_display()
 
 
-@command(r'reverse\s*(\d{1,4})\s*-\s*(\d{1,4})\s*', 'reverse')
+@command(r"reverse\s*(\d{1,4})\s*-\s*(\d{1,4})\s*", "reverse")
 def reverse_songs_range(lower, upper):
     """ Reverse the songs within a specified range. """
     lower, upper = int(lower), int(upper)
-    if lower > upper: lower, upper = upper, lower
+    if lower > upper:
+        lower, upper = upper, lower
 
-    g.model.songs[lower - 1:upper] = reversed(g.model.songs[lower - 1:upper])
+    g.model.songs[lower - 1 : upper] = reversed(g.model.songs[lower - 1 : upper])
     g.message = c.y + "Reversed range: " + str(lower) + "-" + str(upper) + c.w
     g.content = content.generate_songlist_display()
 
 
-@command(r'reverse all', 'reverse all')
+@command(r"reverse all", "reverse all")
 def reverse_playlist():
     """ Reverse order of entire loaded playlist. """
     # Prevent crash if no last query
-    if g.last_search_query == (None, None) or \
-            'func' not in g.last_search_query[1]:
+    if g.last_search_query == (None, None) or "func" not in g.last_search_query[1]:
         g.content = content.logo()
         g.message = "No playlist loaded"
         return
 
-    songs_list_or_func = g.last_search_query[1]['func']
+    songs_list_or_func = g.last_search_query[1]["func"]
     if callable(songs_list_or_func):
         songs = reversed(songs_list_or_func(0, None))
     else:

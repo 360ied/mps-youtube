@@ -25,8 +25,16 @@ mswin = os.name == "nt"
 class ConfigItem:
     """ A configuration item. """
 
-    def __init__(self, name, value, minval=None, maxval=None, check_fn=None,
-                 require_known_player=False, allowed_values=None):
+    def __init__(
+        self,
+        name,
+        value,
+        minval=None,
+        maxval=None,
+        check_fn=None,
+        require_known_player=False,
+        allowed_values=None,
+    ):
         """ If specified, the check_fn should return a dict.
 
         {valid: bool, message: success/fail mesage, value: value to set}
@@ -58,7 +66,8 @@ class ConfigItem:
 
     @property
     def display_temp(self):
-        if self.temp_value is None: return ""
+        if self.temp_value is None:
+            return ""
         return self.display_helper(self.temp_value)
 
     def display_helper(self, retval):
@@ -66,7 +75,7 @@ class ConfigItem:
             retval = str(retval) + "p"
 
         if self.name == "encoder":
-            retval = str(retval) + " [%s]" % (str(g.encoders[retval]['name']))
+            retval = str(retval) + " [%s]" % (str(g.encoders[retval]["name"]))
 
         return retval
 
@@ -86,12 +95,11 @@ class ConfigItem:
         if self.allowed_values and value not in self.allowed_values:
             fail_msg = "%s must be one of * - not %s"
             allowed_values = copy.copy(self.allowed_values)
-            if '' in allowed_values:
-                allowed_values[allowed_values.index('')] = "<nothing>"
+            if "" in allowed_values:
+                allowed_values[allowed_values.index("")] = "<nothing>"
             fail_msg = fail_msg.replace("*", ", ".join(allowed_values))
 
-        if self.require_known_player and \
-                not util.is_known_player(Config.PLAYER.get):
+        if self.require_known_player and not util.is_known_player(Config.PLAYER.get):
             fail_msg = "%s requires mpv or mplayer, can't set to %s"
 
         # handle true / false values
@@ -128,8 +136,7 @@ class ConfigItem:
 
                 if not fail_msg:
                     dispval = value or "None"
-                    success_msg = "%s set to %s" % (c.c("g", self.name),
-                                                    dispval)
+                    success_msg = "%s set to %s" % (c.c("g", self.name), dispval)
 
         # handle space separated list
 
@@ -141,8 +148,7 @@ class ConfigItem:
 
         elif self.type == str:
             dispval = value or "None"
-            success_msg = "%s set to %s" % (c.c("g", self.name),
-                                            c.c("g", dispval))
+            success_msg = "%s set to %s" % (c.c("g", self.name), c.c("g", dispval))
 
         # handle failure
 
@@ -155,13 +161,13 @@ class ConfigItem:
             checked = self.check_fn(value)
             value = checked.get("value") or value
 
-            if checked['valid']:
+            if checked["valid"]:
                 value = checked.get("value", value)
                 set_save(self, value, is_temp)
                 return checked.get("message", success_msg)
 
             else:
-                return checked.get('message', fail_msg)
+                return checked.get("message", fail_msg)
 
         elif success_msg:
             set_save(self, value, is_temp)
@@ -181,8 +187,9 @@ def check_console_width(val):
     """ Show ruler to check console width. """
     valid = True
     message = "-" * val + "\n"
-    message += "console_width set to %s, try a lower value if above line ove" \
-               "rlaps" % val
+    message += (
+        "console_width set to %s, try a lower value if above line ove" "rlaps" % val
+    )
     return dict(valid=valid, message=message)
 
 
@@ -261,7 +268,7 @@ def check_encoder(option):
 
     else:
         message = "Encoder set to %s%s%s"
-        message = message % (c.y, encs[option]['name'], c.w)
+        message = message % (c.y, encs[option]["name"], c.w)
         return dict(valid=True, message=message)
 
 
@@ -306,16 +313,22 @@ class _Config:
     """ Holds various configuration values. """
 
     _configitems = [
-        ConfigItem("order", "relevance",
-                   allowed_values="relevance date views rating title".split()),
-        ConfigItem("user_order", "", allowed_values=
-        [""] + "relevance date views rating".split()),
+        ConfigItem(
+            "order",
+            "relevance",
+            allowed_values="relevance date views rating title".split(),
+        ),
+        ConfigItem(
+            "user_order",
+            "",
+            allowed_values=[""] + "relevance date views rating".split(),
+        ),
         ConfigItem("max_results", 19, maxval=50, minval=1),
-        ConfigItem("console_width", 80, minval=70,
-                   maxval=880, check_fn=check_console_width),
+        ConfigItem(
+            "console_width", 80, minval=70, maxval=880, check_fn=check_console_width
+        ),
         ConfigItem("max_res", 2160, minval=360, maxval=2160),
-        ConfigItem("player", "mplayer" + ".exe" * mswin,
-                   check_fn=check_player),
+        ConfigItem("player", "mplayer" + ".exe" * mswin, check_fn=check_player),
         ConfigItem("playerargs", ""),
         ConfigItem("encoder", 0, minval=0, check_fn=check_encoder),
         ConfigItem("notifier", ""),
@@ -329,28 +342,27 @@ class _Config:
         ConfigItem("overwrite", True),
         ConfigItem("show_video", False),
         ConfigItem("search_music", True),
-        ConfigItem("window_pos", "", check_fn=check_win_pos,
-                   require_known_player=True),
-        ConfigItem("window_size", "",
-                   check_fn=check_win_size, require_known_player=True),
-        ConfigItem("download_command", ''),
+        ConfigItem("window_pos", "", check_fn=check_win_pos, require_known_player=True),
+        ConfigItem(
+            "window_size", "", check_fn=check_win_size, require_known_player=True
+        ),
+        ConfigItem("download_command", ""),
         ConfigItem("lookup_metadata", True),
-        ConfigItem("lastfm_username", ''),
-        ConfigItem("lastfm_password", '', check_fn=check_lastfm_password),
-        ConfigItem("lastfm_api_key", ''),
-        ConfigItem("lastfm_api_secret", ''),
-        ConfigItem("audio_format", "auto",
-                   allowed_values="auto webm m4a".split()),
-        ConfigItem("video_format", "auto",
-                   allowed_values="auto webm mp4 3gp".split()),
-        ConfigItem("api_key", "AIzaSyCIM4EzNqi1in22f4Z3Ru3iYvLaY8tc3bo",
-                   check_fn=check_api_key),
+        ConfigItem("lastfm_username", ""),
+        ConfigItem("lastfm_password", "", check_fn=check_lastfm_password),
+        ConfigItem("lastfm_api_key", ""),
+        ConfigItem("lastfm_api_secret", ""),
+        ConfigItem("audio_format", "auto", allowed_values="auto webm m4a".split()),
+        ConfigItem("video_format", "auto", allowed_values="auto webm mp4 3gp".split()),
+        ConfigItem(
+            "api_key", "AIzaSyCIM4EzNqi1in22f4Z3Ru3iYvLaY8tc3bo", check_fn=check_api_key
+        ),
         ConfigItem("autoplay", False),
         ConfigItem("set_title", True),
         ConfigItem("mpris", not mswin),
         ConfigItem("show_qrcode", False),
         ConfigItem("history", True),
-        ConfigItem("input_history", True)
+        ConfigItem("input_history", True),
     ]
 
     def __getitem__(self, key):
@@ -407,8 +419,10 @@ class _Config:
             # Update config files from versions <= 0.01.41
             if isinstance(self.PLAYERARGS.get, list):
                 self.WINDOW_POS.value = "top-right"
-                redundant = ("-really-quiet --really-quiet -prefer-ipv4 -nolirc "
-                             "-fs --fs".split())
+                redundant = (
+                    "-really-quiet --really-quiet -prefer-ipv4 -nolirc "
+                    "-fs --fs".split()
+                )
 
                 for r in redundant:
                     util.dbg("removing redundant arg %s", r)

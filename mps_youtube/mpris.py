@@ -32,13 +32,13 @@ import dbus
 import dbus.service
 from dbus.mainloop.glib import DBusGMainLoop
 
-IDENTITY = 'mps-youtube'
+IDENTITY = "mps-youtube"
 
-BUS_NAME = 'org.mpris.MediaPlayer2.' + IDENTITY + '.instance' + str(os.getpid())
-ROOT_INTERFACE = 'org.mpris.MediaPlayer2'
-PLAYER_INTERFACE = 'org.mpris.MediaPlayer2.Player'
-PROPERTIES_INTERFACE = 'org.freedesktop.DBus.Properties'
-MPRIS_PATH = '/org/mpris/MediaPlayer2'
+BUS_NAME = "org.mpris.MediaPlayer2." + IDENTITY + ".instance" + str(os.getpid())
+ROOT_INTERFACE = "org.mpris.MediaPlayer2"
+PLAYER_INTERFACE = "org.mpris.MediaPlayer2.Player"
+PROPERTIES_INTERFACE = "org.freedesktop.DBus.Properties"
+MPRIS_PATH = "/org/mpris/MediaPlayer2"
 
 
 class Mpris2Controller:
@@ -94,11 +94,11 @@ class Mpris2Controller:
                 data = conn.recv()
                 if isinstance(data, tuple):
                     name, val = data
-                    if name == 'socket':
+                    if name == "socket":
                         Thread(target=self.mpris.bindmpv, args=(val,)).start()
-                    elif name == 'mplayer-fifo':
+                    elif name == "mplayer-fifo":
                         self.mpris.bindfifo(val)
-                    elif name == 'mpv-fifo':
+                    elif name == "mpv-fifo":
                         self.mpris.bindfifo(val, mpv=True)
                     else:
                         self.mpris.setproperty(name, val)
@@ -114,8 +114,9 @@ class Mpris2Controller:
         if self.bus is not None:
             self.bus.get_bus().request_name(BUS_NAME)
         else:
-            self.bus = dbus.service.BusName(BUS_NAME,
-                                            bus=dbus.SessionBus(mainloop=DBusGMainLoop()))
+            self.bus = dbus.service.BusName(
+                BUS_NAME, bus=dbus.SessionBus(mainloop=DBusGMainLoop())
+            )
 
     def _add_interfaces(self):
         """
@@ -152,39 +153,37 @@ class Mpris2MediaPlayer(dbus.service.Object):
         self.mpv = False
         self.properties = {
             ROOT_INTERFACE: {
-                'read_only': {
-                    'CanQuit': False,
-                    'CanSetFullscreen': False,
-                    'CanRaise': False,
-                    'HasTrackList': False,
-                    'Identity': IDENTITY,
-                    'DesktopEntry': 'mps-youtube',
-                    'SupportedUriSchemes': dbus.Array([], 's', 1),
-                    'SupportedMimeTypes': dbus.Array([], 's', 1),
+                "read_only": {
+                    "CanQuit": False,
+                    "CanSetFullscreen": False,
+                    "CanRaise": False,
+                    "HasTrackList": False,
+                    "Identity": IDENTITY,
+                    "DesktopEntry": "mps-youtube",
+                    "SupportedUriSchemes": dbus.Array([], "s", 1),
+                    "SupportedMimeTypes": dbus.Array([], "s", 1),
                 },
-                'read_write': {
-                    'Fullscreen': False,
-                },
+                "read_write": {"Fullscreen": False,},
             },
             PLAYER_INTERFACE: {
-                'read_only': {
-                    'PlaybackStatus': 'Stopped',
-                    'Metadata': {'mpris:trackid': dbus.ObjectPath(
-                        '/CurrentPlaylist/UnknownTrack', variant_level=1)},
-                    'Position': dbus.Int64(0),
-                    'MinimumRate': 1.0,
-                    'MaximumRate': 1.0,
-                    'CanGoNext': True,
-                    'CanGoPrevious': True,
-                    'CanPlay': True,
-                    'CanPause': True,
-                    'CanSeek': True,
-                    'CanControl': True,
+                "read_only": {
+                    "PlaybackStatus": "Stopped",
+                    "Metadata": {
+                        "mpris:trackid": dbus.ObjectPath(
+                            "/CurrentPlaylist/UnknownTrack", variant_level=1
+                        )
+                    },
+                    "Position": dbus.Int64(0),
+                    "MinimumRate": 1.0,
+                    "MaximumRate": 1.0,
+                    "CanGoNext": True,
+                    "CanGoPrevious": True,
+                    "CanPlay": True,
+                    "CanPause": True,
+                    "CanSeek": True,
+                    "CanControl": True,
                 },
-                'read_write': {
-                    'Rate': 1.0,
-                    'Volume': 1.0,
-                },
+                "read_write": {"Rate": 1.0, "Volume": 1.0,},
             },
         }
 
@@ -197,7 +196,7 @@ class Mpris2MediaPlayer(dbus.service.Object):
         # wait on socket initialization
         tries = 0
         while tries < 10:
-            time.sleep(.5)
+            time.sleep(0.5)
             try:
                 self.socket.connect(sockpath)
                 break
@@ -215,14 +214,14 @@ class Mpris2MediaPlayer(dbus.service.Object):
                 resp = json.loads(line)
 
                 # deals with bug in mpv 0.7 - 0.7.3
-                if resp.get('event') == 'property-change' and not observe_full:
+                if resp.get("event") == "property-change" and not observe_full:
                     self._sendcommand(["observe_property", 2, "volume"])
                     self._sendcommand(["observe_property", 3, "pause"])
                     self._sendcommand(["observe_property", 4, "seeking"])
                     observe_full = True
 
-                if resp.get('event') == 'property-change':
-                    self.setproperty(resp['name'], resp['data'])
+                if resp.get("event") == "property-change":
+                    self.setproperty(resp["name"], resp["data"])
 
         except socket.error:
             self.socket = None
@@ -234,8 +233,8 @@ class Mpris2MediaPlayer(dbus.service.Object):
         """
         time.sleep(1)  # give it some time so fifo could be properly created
         try:
-            self.fifo = open(fifopath, 'w')
-            self._sendcommand(['get_property', 'volume'])
+            self.fifo = open(fifopath, "w")
+            self._sendcommand(["get_property", "volume"])
             self.mpv = mpv
 
         except IOError:
@@ -248,90 +247,98 @@ class Mpris2MediaPlayer(dbus.service.Object):
             don't use this method from dbus interface, all values should
             be set from player (to keep them correct)
         """
-        if name == 'pause':
-            oldval = self.properties[PLAYER_INTERFACE]['read_only']['PlaybackStatus']
+        if name == "pause":
+            oldval = self.properties[PLAYER_INTERFACE]["read_only"]["PlaybackStatus"]
             newval = None
             if val:
-                newval = 'Paused'
+                newval = "Paused"
             else:
-                newval = 'Playing'
+                newval = "Playing"
 
             if newval != oldval:
-                self.properties[PLAYER_INTERFACE]['read_only']['PlaybackStatus'] = newval
-                self.PropertiesChanged(PLAYER_INTERFACE, {'PlaybackStatus': newval}, [])
+                self.properties[PLAYER_INTERFACE]["read_only"][
+                    "PlaybackStatus"
+                ] = newval
+                self.PropertiesChanged(PLAYER_INTERFACE, {"PlaybackStatus": newval}, [])
 
-        elif name == 'stop':
-            oldval = self.properties[PLAYER_INTERFACE]['read_only']['PlaybackStatus']
+        elif name == "stop":
+            oldval = self.properties[PLAYER_INTERFACE]["read_only"]["PlaybackStatus"]
             newval = None
             if val:
-                newval = 'Stopped'
+                newval = "Stopped"
             else:
-                newval = 'Playing'
+                newval = "Playing"
 
             if newval != oldval:
-                self.properties[PLAYER_INTERFACE]['read_only']['PlaybackStatus'] = newval
-                self.PropertiesChanged(PLAYER_INTERFACE, {'PlaybackStatus': newval},
-                                       ['Metadata', 'Position'])
+                self.properties[PLAYER_INTERFACE]["read_only"][
+                    "PlaybackStatus"
+                ] = newval
+                self.PropertiesChanged(
+                    PLAYER_INTERFACE,
+                    {"PlaybackStatus": newval},
+                    ["Metadata", "Position"],
+                )
 
-        elif name == 'volume' and val is not None:
-            oldval = self.properties[PLAYER_INTERFACE]['read_write']['Volume']
+        elif name == "volume" and val is not None:
+            oldval = self.properties[PLAYER_INTERFACE]["read_write"]["Volume"]
             newval = float(val) / 100
 
             if newval != oldval:
-                self.properties[PLAYER_INTERFACE]['read_write']['Volume'] = newval
-                self.PropertiesChanged(PLAYER_INTERFACE, {'Volume': newval}, [])
+                self.properties[PLAYER_INTERFACE]["read_write"]["Volume"] = newval
+                self.PropertiesChanged(PLAYER_INTERFACE, {"Volume": newval}, [])
 
-        elif name == 'time-pos' and val:
-            oldval = self.properties[PLAYER_INTERFACE]['read_only']['Position']
+        elif name == "time-pos" and val:
+            oldval = self.properties[PLAYER_INTERFACE]["read_only"]["Position"]
             newval = dbus.Int64(val * 10 ** 6)
 
             if newval != oldval:
-                self.properties[PLAYER_INTERFACE]['read_only']['Position'] = newval
+                self.properties[PLAYER_INTERFACE]["read_only"]["Position"] = newval
             if abs(newval - oldval) >= 4 * 10 ** 6:
                 self.Seeked(newval)
 
-        elif name == 'metadata' and val:
+        elif name == "metadata" and val:
             trackid, title, length, arturl, artist, album = val
             # sanitize ytid - it uses '-_' which are not valid in dbus paths
-            trackid_sanitized = re.sub('[^a-zA-Z0-9]', '', trackid)
-            yturl = 'https://www.youtube.com/watch?v=' + trackid
+            trackid_sanitized = re.sub("[^a-zA-Z0-9]", "", trackid)
+            yturl = "https://www.youtube.com/watch?v=" + trackid
 
-            oldval = self.properties[PLAYER_INTERFACE]['read_only']['Metadata']
+            oldval = self.properties[PLAYER_INTERFACE]["read_only"]["Metadata"]
             newval = {
-                'mpris:trackid': dbus.ObjectPath(
-                    '/CurrentPlaylist/ytid/' + trackid_sanitized, variant_level=1),
-                'mpris:length': dbus.Int64(length * 10 ** 6, variant_level=1),
-                'mpris:artUrl': dbus.String(arturl, variant_level=1),
-                'xesam:title': dbus.String(title, variant_level=1),
-                'xesam:artist': dbus.Array(artist, 's', 1),
-                'xesam:album': dbus.String(album, variant_level=1),
-                'xesam:url': dbus.String(yturl, variant_level=1),
+                "mpris:trackid": dbus.ObjectPath(
+                    "/CurrentPlaylist/ytid/" + trackid_sanitized, variant_level=1
+                ),
+                "mpris:length": dbus.Int64(length * 10 ** 6, variant_level=1),
+                "mpris:artUrl": dbus.String(arturl, variant_level=1),
+                "xesam:title": dbus.String(title, variant_level=1),
+                "xesam:artist": dbus.Array(artist, "s", 1),
+                "xesam:album": dbus.String(album, variant_level=1),
+                "xesam:url": dbus.String(yturl, variant_level=1),
             }
 
             if newval != oldval:
-                self.properties[PLAYER_INTERFACE]['read_only']['Metadata'] = newval
-                self.PropertiesChanged(PLAYER_INTERFACE, {'Metadata': newval}, [])
+                self.properties[PLAYER_INTERFACE]["read_only"]["Metadata"] = newval
+                self.PropertiesChanged(PLAYER_INTERFACE, {"Metadata": newval}, [])
 
-        elif name == 'seeking':
+        elif name == "seeking":
             # send signal to keep time-pos synced between player and client
             if not val:
-                self.Seeked(self.properties[PLAYER_INTERFACE]['read_only']['Position'])
+                self.Seeked(self.properties[PLAYER_INTERFACE]["read_only"]["Position"])
 
     def _sendcommand(self, command):
         """
             sends commands to binded player
         """
         if self.socket:
-            self.socket.send(json.dumps({"command": command}).encode() + b'\n')
+            self.socket.send(json.dumps({"command": command}).encode() + b"\n")
         elif self.fifo:
             command = command[:]
             for x, i in enumerate(command):
                 if i is True:
-                    command[x] = 'yes' if self.mpv else 1
+                    command[x] = "yes" if self.mpv else 1
                 elif i is False:
-                    command[x] = 'no' if self.mpv else 0
+                    command[x] = "no" if self.mpv else 0
 
-            cmd = " ".join([str(i) for i in command]) + '\n'
+            cmd = " ".join([str(i) for i in command]) + "\n"
             self.fifo.write(cmd)
             self.fifo.flush()
 
@@ -381,8 +388,11 @@ class Mpris2MediaPlayer(dbus.service.Object):
         if self.mpv:
             self._sendcommand(["set_property", "pause", True])
         else:
-            if self.properties[PLAYER_INTERFACE]['read_only']['PlaybackStatus'] != 'Paused':
-                self._sendcommand(['pause'])
+            if (
+                self.properties[PLAYER_INTERFACE]["read_only"]["PlaybackStatus"]
+                != "Paused"
+            ):
+                self._sendcommand(["pause"])
 
     @dbus.service.method(PLAYER_INTERFACE)
     def PlayPause(self):
@@ -410,10 +420,13 @@ class Mpris2MediaPlayer(dbus.service.Object):
         if self.mpv:
             self._sendcommand(["set_property", "pause", False])
         else:
-            if self.properties[PLAYER_INTERFACE]['read_only']['PlaybackStatus'] != 'Playing':
-                self._sendcommand(['pause'])
+            if (
+                self.properties[PLAYER_INTERFACE]["read_only"]["PlaybackStatus"]
+                != "Playing"
+            ):
+                self._sendcommand(["pause"])
 
-    @dbus.service.method(PLAYER_INTERFACE, in_signature='x')
+    @dbus.service.method(PLAYER_INTERFACE, in_signature="x")
     def Seek(self, offset):
         """
             Offset - x (offset)
@@ -424,7 +437,7 @@ class Mpris2MediaPlayer(dbus.service.Object):
         """
         self._sendcommand(["seek", offset / 10 ** 6])
 
-    @dbus.service.method(PLAYER_INTERFACE, in_signature='ox')
+    @dbus.service.method(PLAYER_INTERFACE, in_signature="ox")
     def SetPosition(self, track_id, position):
         """
             TrackId - o (track_id)
@@ -436,10 +449,17 @@ class Mpris2MediaPlayer(dbus.service.Object):
 
             Sets the current track position in microseconds.
         """
-        if track_id == self.properties[PLAYER_INTERFACE]['read_only']['Metadata']['mpris:trackid']:
-            self._sendcommand(["seek", position / 10 ** 6, 'absolute' if self.mpv else 2])
+        if (
+            track_id
+            == self.properties[PLAYER_INTERFACE]["read_only"]["Metadata"][
+                "mpris:trackid"
+            ]
+        ):
+            self._sendcommand(
+                ["seek", position / 10 ** 6, "absolute" if self.mpv else 2]
+            )
 
-    @dbus.service.method(PLAYER_INTERFACE, in_signature='s')
+    @dbus.service.method(PLAYER_INTERFACE, in_signature="s")
     def OpenUri(self, uri):
         """
             Uri - s (uri)
@@ -449,7 +469,7 @@ class Mpris2MediaPlayer(dbus.service.Object):
         """
         pass
 
-    @dbus.service.signal(PLAYER_INTERFACE, signature='x')
+    @dbus.service.signal(PLAYER_INTERFACE, signature="x")
     def Seeked(self, position):
         """
             Position - x (position)
@@ -464,53 +484,54 @@ class Mpris2MediaPlayer(dbus.service.Object):
     # implementing org.freedesktop.DBus.Properties
     #
 
-    @dbus.service.method(dbus_interface=PROPERTIES_INTERFACE,
-                         in_signature='ss', out_signature='v')
+    @dbus.service.method(
+        dbus_interface=PROPERTIES_INTERFACE, in_signature="ss", out_signature="v"
+    )
     def Get(self, interface_name, property_name):
         """
             getter for org.freedesktop.DBus.Properties on this object
         """
         return self.GetAll(interface_name)[property_name]
 
-    @dbus.service.method(dbus_interface=PROPERTIES_INTERFACE,
-                         in_signature='s', out_signature='a{sv}')
+    @dbus.service.method(
+        dbus_interface=PROPERTIES_INTERFACE, in_signature="s", out_signature="a{sv}"
+    )
     def GetAll(self, interface_name):
         """
             getter for org.freedesktop.DBus.Properties on this object
         """
         if interface_name in self.properties:
-            t = copy.copy(self.properties[interface_name]['read_only'])
-            t.update(self.properties[interface_name]['read_write'])
+            t = copy.copy(self.properties[interface_name]["read_only"])
+            t.update(self.properties[interface_name]["read_write"])
 
             return t
         else:
             raise dbus.exceptions.DBusException(
-                'com.example.UnknownInterface',
-                'This object does not implement the %s interface'
-                % interface_name)
+                "com.example.UnknownInterface",
+                "This object does not implement the %s interface" % interface_name,
+            )
 
-    @dbus.service.method(dbus_interface=PROPERTIES_INTERFACE,
-                         in_signature='ssv')
+    @dbus.service.method(dbus_interface=PROPERTIES_INTERFACE, in_signature="ssv")
     def Set(self, interface_name, property_name, new_value):
         """
             setter for org.freedesktop.DBus.Properties on this object
         """
         if interface_name in self.properties:
-            if property_name in self.properties[interface_name]['read_write']:
-                if property_name == 'Volume':
+            if property_name in self.properties[interface_name]["read_write"]:
+                if property_name == "Volume":
                     self._sendcommand(["set_property", "volume", new_value * 100])
                     if self.fifo:  # fix for mplayer (force update)
-                        self._sendcommand(['get_property', 'volume'])
+                        self._sendcommand(["get_property", "volume"])
         else:
             raise dbus.exceptions.DBusException(
-                'com.example.UnknownInterface',
-                'This object does not implement the %s interface'
-                % interface_name)
+                "com.example.UnknownInterface",
+                "This object does not implement the %s interface" % interface_name,
+            )
 
-    @dbus.service.signal(dbus_interface=PROPERTIES_INTERFACE,
-                         signature='sa{sv}as')
-    def PropertiesChanged(self, interface_name, changed_properties,
-                          invalidated_properties):
+    @dbus.service.signal(dbus_interface=PROPERTIES_INTERFACE, signature="sa{sv}as")
+    def PropertiesChanged(
+        self, interface_name, changed_properties, invalidated_properties
+    ):
         """
             signal for org.freedesktop.DBus.Properties on this object
 
@@ -539,7 +560,7 @@ class MprisConnection(object):
                 self.connection.send(obj)
             except BrokenPipeError:
                 self.connection = None
-                print('MPRIS process exited or crashed.')
+                print("MPRIS process exited or crashed.")
 
 
 def main(connection):
@@ -556,8 +577,9 @@ def main(connection):
     try:
         mprisctl.acquire()
     except dbus.exceptions.DBusException as e:
-        print('mpris interface couldn\'t be initialized. reason: %s'
-              % e.get_dbus_message())
+        print(
+            "mpris interface couldn't be initialized. reason: %s" % e.get_dbus_message()
+        )
         return
     mprisctl.run(connection)
     mprisctl.release()

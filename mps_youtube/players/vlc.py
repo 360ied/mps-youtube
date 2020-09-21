@@ -12,12 +12,12 @@ class vlc(CmdPlayer):
     def _generate_real_playerargs(self):
         args = config.PLAYERARGS.get.strip().split()
 
-        pd = g.playerargs_defaults['vlc']
+        pd = g.playerargs_defaults["vlc"]
         args.extend((pd["title"], '"{0}"'.format(self.song.title)))
 
         util.list_update("--play-and-exit", args)
 
-        return [self.player] + args + [self.stream['url']]
+        return [self.player] + args + [self.stream["url"]]
 
     def clean_up(self):
         pass

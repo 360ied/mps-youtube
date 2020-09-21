@@ -12,7 +12,7 @@ from .. import content, g, playlists, screen, util, listview
 from ..playlist import Playlist
 
 
-@command(r'mkp\s*(.{1,100})', 'mkp')
+@command(r"mkp\s*(.{1,100})", "mkp")
 def generate_playlist(sourcefile):
     """Generate a playlist from video titles in sourcefile"""
 
@@ -23,13 +23,13 @@ def generate_playlist(sourcefile):
 
     expanded_sourcefile = path.expanduser(sourcefile)
     if not check_sourcefile(expanded_sourcefile):
-        g.message = util.F('mkp empty') % expanded_sourcefile
+        g.message = util.F("mkp empty") % expanded_sourcefile
     else:
         queries = read_sourcefile(expanded_sourcefile)
-        g.message = util.F('mkp parsed') % (len(queries), sourcefile)
+        g.message = util.F("mkp parsed") % (len(queries), sourcefile)
         if queries:
             create_playlist(queries)
-            g.message = util.F('pl help')
+            g.message = util.F("pl help")
             g.content = content.playlists_display()
 
 
@@ -50,7 +50,7 @@ def check_sourcefile(filename):
     return path.isfile(filename) and path.getsize(filename) > 0
 
 
-def create_playlist(queries, title=''):
+def create_playlist(queries, title=""):
     """Add a new playlist
 
     Create playlist with a random name, get the first
@@ -60,7 +60,7 @@ def create_playlist(queries, title=''):
     if not g.userpl.get(plname):
         g.userpl[plname] = Playlist(plname)
     for query in queries:
-        g.message = util.F('mkp finding') % query
+        g.message = util.F("mkp finding") % query
         screen.update()
         qresult = find_best_match(query)
         if qresult:
@@ -73,19 +73,19 @@ def find_best_match(query):
     """Find the best(first)"""
     # This assumes that the first match is the best one
     qs = search.generate_search_qs(query)
-    wdata = pafy.call_gdata('search', qs)
+    wdata = pafy.call_gdata("search", qs)
     results = search.get_tracks_from_json(wdata)
     if results:
-        res, score = album_search._best_song_match(
-            results, query, 0.1, 1.0, 0.0)
+        res, score = album_search._best_song_match(results, query, 0.1, 1.0, 0.0)
         return res
 
 
 def random_plname():
     """Generates a random alphanumeric string of 6 characters"""
     n_chars = 6
-    return ''.join(choice(string.ascii_lowercase + string.digits)
-                   for _ in range(n_chars))
+    return "".join(
+        choice(string.ascii_lowercase + string.digits) for _ in range(n_chars)
+    )
 
 
 def description_generator(text):
@@ -102,12 +102,12 @@ def description_generator(text):
     num = util.number_string_to_list(num)[0]
 
     query = {}
-    query['id'] = g.model[num].ytid
-    query['part'] = 'snippet'
-    query['maxResults'] = '1'
-    data = pafy.call_gdata('videos', query)['items'][0]['snippet']
-    title = "mkp %s" % data['title']
-    data = util.fetch_songs(data['description'], data['title'])
+    query["id"] = g.model[num].ytid
+    query["part"] = "snippet"
+    query["maxResults"] = "1"
+    data = pafy.call_gdata("videos", query)["items"][0]["snippet"]
+    title = "mkp %s" % data["title"]
+    data = util.fetch_songs(data["description"], data["title"])
 
     columns = [
         {"name": "idx", "size": 3, "heading": "Num"},

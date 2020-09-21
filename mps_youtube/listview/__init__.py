@@ -38,6 +38,7 @@ class ListView(content.PaginatedContent):
 
             "idx" is generated in the content function, not by the ListViewItem
     """
+
     func = None
     objects = None
     columns = None
@@ -88,39 +89,44 @@ class ListView(content.PaginatedContent):
             TODO: Make it so set columns can set "remaining" ?
         """
         # Sums all ints, deal with strings later
-        remaining = (util.getxy().width) - sum(
-            1 + (x['size'] if x['size'] and x['size'].__class__ == int else 0) for x in self.columns) - (
-                        len(self.columns))
+        remaining = (
+            (util.getxy().width)
+            - sum(
+                1 + (x["size"] if x["size"] and x["size"].__class__ == int else 0)
+                for x in self.columns
+            )
+            - (len(self.columns))
+        )
         lengthsize = 0
-        if "length" in [x['size'] for x in self.columns]:
+        if "length" in [x["size"] for x in self.columns]:
             max_l = max((getattr(x, "length")() for x in self.objects))
             lengthsize = 8 if max_l > 35999 else 7
             lengthsize = 6 if max_l < 6000 else lengthsize
 
         for col in self.columns:
-            if col['size'] == "remaining":
-                col['size'] = remaining - lengthsize
-            if col['size'] == "length":
-                col['size'] = lengthsize
+            if col["size"] == "remaining":
+                col["size"] = remaining - lengthsize
+            if col["size"] == "length":
+                col["size"] = lengthsize
 
         for num, column in enumerate(self.columns):
-            column['idx'] = num
-            column['sign'] = "-" if not column['name'] == "length" else ""
+            column["idx"] = num
+            column["sign"] = "-" if not column["name"] == "length" else ""
 
-        fmt = ["%{}{}s  ".format(x['sign'], x['size']) for x in self.columns]
+        fmt = ["%{}{}s  ".format(x["sign"], x["size"]) for x in self.columns]
         fmtrow = fmt[0:1] + ["%s  "] + fmt[2:]
         fmt, fmtrow = "".join(fmt).strip(), "".join(fmtrow).strip()
-        titles = tuple([x['heading'][:x['size']] for x in self.columns])
+        titles = tuple([x["heading"][: x["size"]] for x in self.columns])
         out = "\n" + (c.ul + fmt % titles + c.w) + "\n"
 
         for num, obj in enumerate(self.objects[self._page_slice()]):
-            col = (c.r if num % 2 == 0 else c.p)
+            col = c.r if num % 2 == 0 else c.p
             idx = num + (self.views_per_page() * self.page) + 1
 
-            line = ''
+            line = ""
             for column in self.columns:
-                fieldsize, field = column['size'], column['name']
-                direction = "<" if column['sign'] == "-" else ">"
+                fieldsize, field = column["size"], column["name"]
+                direction = "<" if column["sign"] == "-" else ">"
 
                 if field == "idx":
                     field = "%2d" % idx

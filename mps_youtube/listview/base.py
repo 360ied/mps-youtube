@@ -2,6 +2,7 @@ class ListViewItem:
     """ Base class for items
         Used by Listview
     """
+
     data = None
 
     def __init__(self, data):

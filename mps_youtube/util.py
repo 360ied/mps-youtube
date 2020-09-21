@@ -23,10 +23,10 @@ macos = platform.system() == "Darwin"
 mswin = os.name == "nt"
 not_utf8_environment = mswin or "UTF-8" not in sys.stdout.encoding
 
-XYTuple = collections.namedtuple('XYTuple', 'width height max_results')
+XYTuple = collections.namedtuple("XYTuple", "width height max_results")
 
 
-class IterSlicer():
+class IterSlicer:
     """ Class that takes an iterable and allows slicing,
         loading from the iterable as needed."""
 
@@ -70,7 +70,7 @@ def has_exefile(filename):
     :returns: Path to file or False if not found
     :rtype: str or False
     """
-    paths = [os.getcwd()] + os.environ.get("PATH", '').split(os.pathsep)
+    paths = [os.getcwd()] + os.environ.get("PATH", "").split(os.pathsep)
     paths = [i for i in paths if i]
     dbg("searching path for %s", filename)
 
@@ -129,9 +129,9 @@ def mswinfn(filename):
 def sanitize_filename(filename, ignore_slashes=False):
     """ Sanitize filename """
     if not ignore_slashes:
-        filename = filename.replace('/', '-')
+        filename = filename.replace("/", "-")
     if macos:
-        filename = filename.replace(':', '_')
+        filename = filename.replace(":", "_")
     if mswin:
         filename = utf8_replace(filename) if not_utf8_environment else filename
         allowed = re.compile(r'[^\\?*$\'"%&:<>|]')
@@ -145,7 +145,7 @@ def set_window_title(title):
     if mswin:
         ctypes.windll.kernel32.SetConsoleTitleW(xenc(title))
     else:
-        sys.stdout.write(xenc('\x1b]2;' + title + '\x07'))
+        sys.stdout.write(xenc("\x1b]2;" + title + "\x07"))
 
 
 def list_update(item, lst, remove=False):
@@ -246,6 +246,7 @@ def getxy():
     """
     # Import here to avoid circular dependency
     from . import config
+
     if g.detectable_size:
         x, y = terminalsize.get_terminal_size()
         max_results = y - 4 if y < 54 else 50
@@ -260,7 +261,7 @@ def getxy():
 
 def fmt_time(seconds):
     """ Format number of seconds to %H:%M:%S. """
-    hms = time.strftime('%H:%M:%S', time.gmtime(int(seconds)))
+    hms = time.strftime("%H:%M:%S", time.gmtime(int(seconds)))
     H, M, S = hms.split(":")
 
     if H == "00":
@@ -277,7 +278,7 @@ def fmt_time(seconds):
 
 def correct_truncate(text, max_len):
     """ Truncate a string taking into account East Asian width chars."""
-    str_len, out = 0, ''
+    str_len, out = 0, ""
 
     for c in text:
         str_len += real_len(c)
@@ -295,11 +296,11 @@ def uea_pad(num, t, direction="<", notrunc=False):
     """ Right pad with spaces taking into account East Asian width chars. """
     direction = direction.strip() or "<"
 
-    t = ' '.join(t.split('\n'))
+    t = " ".join(t.split("\n"))
 
     # TODO: Find better way of dealing with this?
     if num <= 0:
-        return ''
+        return ""
 
     if not notrunc:
         # Truncate to max of num characters
@@ -335,7 +336,7 @@ def real_len(u, alt=False):
 
     if alt:
         # widths = dict(W=2, F=2, A=1, N=0.75, H=0.5)  # original
-        widths = dict(N=.75, Na=1, W=2, F=2, A=1)
+        widths = dict(N=0.75, Na=1, W=2, F=2, A=1)
 
     else:
         widths = dict(W=2, F=2, A=1, N=1, H=0.5)
@@ -378,7 +379,7 @@ def parse_multi(choice, end=None):
 
     """
     end = end or str(len(g.model))
-    pattern = r'(?<![-\d\[\]])(\d+-\d+|-\d+|\d+-|\d+)(?:\[(\d+)\])?(?![-\d\[\]])'
+    pattern = r"(?<![-\d\[\]])(\d+-\d+|-\d+|\d+-|\d+)(?:\[(\d+)\])?(?![-\d\[\]])"
     items = re.findall(pattern, choice)
     alltracks = []
 
@@ -424,7 +425,7 @@ def _bi_range(start, end):
 def is_known_player(player):
     """ Return true if the set player is known. """
     for allowed_player in g.playerargs_defaults:
-        regex = r'(?:\b%s($|\.[a-zA-Z0-9]+$))' % re.escape(allowed_player)
+        regex = r"(?:\b%s($|\.[a-zA-Z0-9]+$))" % re.escape(allowed_player)
         match = re.search(regex, player)
 
         if mswin:
@@ -439,8 +440,7 @@ def is_known_player(player):
 def load_player_info(player):
     if "mpv" in player:
         g.mpv_version = _get_mpv_version(player)
-        g.mpv_options = subprocess.check_output(
-            [player, "--list-options"]).decode()
+        g.mpv_options = subprocess.check_output([player, "--list-options"]).decode()
 
         if not mswin:
             if "--input-unix-socket" in g.mpv_options:
@@ -493,13 +493,13 @@ def _get_mpv_version(exename):
 
 def _get_mplayer_version(exename):
     o = subprocess.check_output([exename]).decode()
-    m = re.search('MPlayer SVN[\s-]r([0-9]+)', o, re.MULTILINE | re.IGNORECASE)
+    m = re.search("MPlayer SVN[\s-]r([0-9]+)", o, re.MULTILINE | re.IGNORECASE)
 
     ver = 0
     if m:
         ver = int(m.groups()[0])
     else:
-        m = re.search('MPlayer ([0-9])+.([0-9]+)', o, re.MULTILINE)
+        m = re.search("MPlayer ([0-9])+.([0-9]+)", o, re.MULTILINE)
         if m:
             ver = tuple(int(i) for i in m.groups())
 
@@ -510,16 +510,18 @@ def _get_mplayer_version(exename):
 
 
 def _get_metadata(song_title):
-    ''' Get metadata from a song title '''
+    """ Get metadata from a song title """
     t = re.sub("[\(\[].*?[\)\]]", "", song_title.lower())
-    t = t.split('-')
+    t = t.split("-")
 
     if len(t) != 2:  # If len is not 2, no way of properly knowing title for sure
         t = t[0]
-        t = t.split(':')
-        if len(t) != 2:  # Ugly, but to be safe in case all these chars exist, Will improve
+        t = t.split(":")
+        if (
+            len(t) != 2
+        ):  # Ugly, but to be safe in case all these chars exist, Will improve
             t = t[0]
-            t = t.split('|')
+            t = t.split("|")
             if len(t) != 2:
                 return None
 
@@ -539,21 +541,21 @@ def _get_metadata(song_title):
 
 
 def _get_metadata_from_lastfm(artist, track):
-    ''' Try to get metadata with a given artist and track '''
-    url = 'https://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=12dec50313f885d407cf8132697b8712&'
-    url += urllib.parse.urlencode({"artist": artist}) + '&'
-    url += urllib.parse.urlencode({"track": track}) + '&'
-    url += '&format=json'
+    """ Try to get metadata with a given artist and track """
+    url = "https://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=12dec50313f885d407cf8132697b8712&"
+    url += urllib.parse.urlencode({"artist": artist}) + "&"
+    url += urllib.parse.urlencode({"track": track}) + "&"
+    url += "&format=json"
 
     try:
         resp = urllib.request.urlopen(url)
         metadata = dict()
         # Prior to Python 3.6, json.loads cannot take a bytes object
-        data = json.loads(resp.read().decode('utf-8'))
-        metadata['track_title'] = data['track']['name']
-        metadata['artist'] = data['track']['artist']['name']
-        metadata['album'] = data['track']['album']['title']
-        metadata['album_art_url'] = data['track']['album']['image'][-1]['#text']
+        data = json.loads(resp.read().decode("utf-8"))
+        metadata["track_title"] = data["track"]["name"]
+        metadata["artist"] = data["track"]["artist"]["name"]
+        metadata["album"] = data["track"]["album"]["title"]
+        metadata["album_art_url"] = data["track"]["album"]["image"][-1]["#text"]
     except (KeyError, IndexError):
         return None
     except (urllib.error.HTTPError, urllib.error.URLError):
@@ -564,18 +566,19 @@ def _get_metadata_from_lastfm(artist, track):
 def assign_player(player):
     module_name = player
 
-    if '/' in module_name:
-        module_name = module_name.split('/')[-1]
-    if module_name.endswith('.com') or module_name.endswith('.exe'):
-        module_name = module_name.split('.')[0]
+    if "/" in module_name:
+        module_name = module_name.split("/")[-1]
+    if module_name.endswith(".com") or module_name.endswith(".exe"):
+        module_name = module_name.split(".")[0]
 
     try:
-        module = import_module('mps_youtube.players.{0}'.format(module_name))
+        module = import_module("mps_youtube.players.{0}".format(module_name))
         pl = getattr(module, module_name)
         g.PLAYER_OBJ = pl(player)
 
     except ImportError:
         from mps_youtube.players import GenericPlayer
+
         g.PLAYER_OBJ = GenericPlayer.GenericPlayer(player)
 
 
@@ -584,15 +587,16 @@ class CommandCompleter:
 
     def __init__(self):
         from . import config
-        self.SET_COMMANDS = ['set ' + i.lower() for i in config]
+
+        self.SET_COMMANDS = ["set " + i.lower() for i in config]
 
     def complete_command(self, text, state):
-        if text.startswith('set'):
+        if text.startswith("set"):
             results = [x for x in self.SET_COMMANDS if x.startswith(text)] + [None]
         else:
             results = [x for x in self.COMMANDS if x.startswith(text)] + [None]
         return results[state]
 
     def add_cmd(self, val):
-        if (not val in self.COMMANDS):
+        if not val in self.COMMANDS:
             self.COMMANDS.append(val)

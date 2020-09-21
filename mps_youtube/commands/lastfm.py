@@ -12,12 +12,12 @@ from .. import g, util, config
 from . import command
 
 
-@command(r'lastfm_connect', 'lastfm_connect')
+@command(r"lastfm_connect", "lastfm_connect")
 def init_network(verbose=True):
     """ Initialize the global pylast network variable """
     if not has_pylast:
         if verbose:
-            pylast_url = 'https://github.com/pylast/pylast'
+            pylast_url = "https://github.com/pylast/pylast"
             g.message = '"pylast" module not found\n see %s' % (pylast_url)
         return
 
@@ -33,9 +33,9 @@ def init_network(verbose=True):
         return
 
     try:
-        g.lastfm_network = pylast.LastFMNetwork(api_key=key, api_secret=secret,
-                                                username=username,
-                                                password_hash=password)
+        g.lastfm_network = pylast.LastFMNetwork(
+            api_key=key, api_secret=secret, username=username, password_hash=password
+        )
         if verbose:
             g.message = "Last.fm authentication successful!"
     except (pylast.WSError, pylast.MalformedResponseError, pylast.NetworkError) as e:
@@ -49,8 +49,9 @@ def scrobble_track(artist, album, track):
         return
     unix_timestamp = int(time.mktime(datetime.datetime.now().timetuple()))
     try:
-        g.lastfm_network.scrobble(artist=artist, title=track, album=album,
-                                  timestamp=unix_timestamp)
+        g.lastfm_network.scrobble(
+            artist=artist, title=track, album=album, timestamp=unix_timestamp
+        )
     except (pylast.WSError, pylast.MalformedResponseError, pylast.NetworkError):
         return
 

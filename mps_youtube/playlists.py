@@ -11,11 +11,11 @@ from .playlist import Playlist, Video
 def save():
     """ Save playlists.  Called each time a playlist is saved or deleted. """
     for pl in g.userpl:
-        with open(os.path.join(g.PLFOLDER, pl + '.m3u'), 'w') as plf:
-            plf.write('#EXTM3U\n\n')
+        with open(os.path.join(g.PLFOLDER, pl + ".m3u"), "w") as plf:
+            plf.write("#EXTM3U\n\n")
             for song in g.userpl[pl].songs:
-                plf.write('#EXTINF:%d,%s\n' % (song.length, song.title))
-                plf.write('https://www.youtube.com/watch?v=%s\n' % song.ytid)
+                plf.write("#EXTINF:%d,%s\n" % (song.length, song.title))
+                plf.write("https://www.youtube.com/watch?v=%s\n" % song.ytid)
 
     util.dbg(c.r + "Playlist saved\n---" + c.w)
 
@@ -26,7 +26,7 @@ def load():
     _convert_playlist_to_m3u()
     try:
         # Loop through all files ending in '.m3u'
-        for m3u in [m3u for m3u in os.listdir(g.PLFOLDER) if m3u[-4:] == '.m3u']:
+        for m3u in [m3u for m3u in os.listdir(g.PLFOLDER) if m3u[-4:] == ".m3u"]:
             g.userpl[m3u[:-4]] = read_m3u(os.path.join(g.PLFOLDER, m3u))
 
     except FileNotFoundError:
@@ -55,7 +55,7 @@ def load():
 def delete(name):
     """ Delete playlist, including m3u file. """
     del g.userpl[name]
-    os.remove(os.path.join(g.PLFOLDER, name + '.m3u'))
+    os.remove(os.path.join(g.PLFOLDER, name + ".m3u"))
 
 
 def read_m3u(m3u):
@@ -64,13 +64,17 @@ def read_m3u(m3u):
     songs = []
     expect_ytid = False
 
-    with open(m3u, 'r') as plf:
-        if plf.readline().startswith('#EXTM3U'):
+    with open(m3u, "r") as plf:
+        if plf.readline().startswith("#EXTM3U"):
             for line in plf:
-                if line.startswith('#EXTINF:') and not expect_ytid:
-                    duration, title = line.replace('#EXTINF:', '').strip().split(',', 1)
+                if line.startswith("#EXTINF:") and not expect_ytid:
+                    duration, title = line.replace("#EXTINF:", "").strip().split(",", 1)
                     expect_ytid = True
-                elif not line.startswith('\n') and not line.startswith('#') and expect_ytid:
+                elif (
+                    not line.startswith("\n")
+                    and not line.startswith("#")
+                    and expect_ytid
+                ):
                     ytid = extract_video_id(line).strip()
                     songs.append(Video(ytid, title, int(duration)))
                     expect_ytid = False
@@ -79,7 +83,7 @@ def read_m3u(m3u):
         else:
             plf.seek(0)
             for line in plf:
-                if not line.startswith('#'):
+                if not line.startswith("#"):
                     try:
                         p = util.get_pafy(line)
                         songs.append(Video(p.videoid, p.title, p.length))
@@ -120,7 +124,7 @@ def _convert_playlist_to_v2():
         songs = []
 
         for video in plitem.songs:
-            v = Video(video['link'], video['title'], video['duration'])
+            v = Video(video["link"], video["title"], video["duration"])
             songs.append(v)
 
         g.userpl[plname] = Playlist(plname, songs)
@@ -142,17 +146,19 @@ def _convert_playlist_to_m3u():
         return
 
     try:
-        with open(g.PLFILE, 'rb') as plf:
+        with open(g.PLFILE, "rb") as plf:
             old_playlists = pickle.load(plf)
 
     except AttributeError:
         # playlist is from a time when this module was __main__
         # https://github.com/np1/mps-youtube/issues/214
         import __main__
+
         __main__.Playlist = Playlist
         __main__.Video = Video
 
         from . import main
+
         main.Playlist = Playlist
         main.Video = Video
 

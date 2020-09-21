@@ -26,12 +26,13 @@ class Playlist:
         duration = sum(s.length for s in self.songs)
         mins, secs = divmod(duration, 60)
         hours, mins = divmod(mins, 60)
-        duration = '{H:02}:{M:02}:{S:02}'.format(H=hours, M=mins, S=secs)
+        duration = "{H:02}:{M:02}:{S:02}".format(H=hours, M=mins, S=secs)
         return duration
 
 
 class Video:
     """ Class to represent a YouTube video. """
+
     description = ""
 
     def __init__(self, ytid, title, length):

@@ -14,7 +14,7 @@ from .songlist import dump, plist
 from .. import g, c, screen, streams, content, config, util
 
 
-@command(r'(dv|da|d|dl|download)\s*(\d{1,4})', 'da', 'dv', 'd', 'dl', 'download')
+@command(r"(dv|da|d|dl|download)\s*(\d{1,4})", "da", "dv", "d", "dl", "download")
 def download(dltype, num):
     """ Download a track or playlist by menu item number. """
     # This function needs refactoring!
@@ -38,7 +38,7 @@ def download(dltype, num):
         return
 
     screen.writestatus("Fetching video info...")
-    song = (g.model[int(num) - 1])
+    song = g.model[int(num) - 1]
     best = dltype.startswith("dv") or dltype.startswith("da")
 
     if not best:
@@ -107,10 +107,18 @@ def download(dltype, num):
     if url_au:
         # multiplex
         name, ext = os.path.splitext(args[1])
-        tmpvideoname = name + '.' + str(random.randint(10000, 99999)) + ext
+        tmpvideoname = name + "." + str(random.randint(10000, 99999)) + ext
         os.rename(args[1], tmpvideoname)
-        mux_cmd = [g.muxapp, "-i", tmpvideoname, "-i", args_au[1], "-c",
-                   "copy", name + ".mp4"]
+        mux_cmd = [
+            g.muxapp,
+            "-i",
+            tmpvideoname,
+            "-i",
+            args_au[1],
+            "-c",
+            "copy",
+            name + ".mp4",
+        ]
 
         try:
             subprocess.call(mux_cmd)
@@ -124,7 +132,7 @@ def download(dltype, num):
     g.content = content.generate_songlist_display()
 
 
-@command(r'(da|dv)\s+((?:\d+\s\d+|-\d+|\d+-|\d+,)(?:[\d\s,-]*))', 'da', 'dv')
+@command(r"(da|dv)\s+((?:\d+\s\d+|-\d+|\d+-|\d+,)(?:[\d\s,-]*))", "da", "dv")
 def down_many(dltype, choice, subdir=None):
     """ Download multiple items. """
     choice = util.parse_multi(choice)
@@ -188,7 +196,7 @@ def down_many(dltype, choice, subdir=None):
         g.content = content.generate_songlist_display()
 
 
-@command(r'(da|dv)pl\s+%s' % PL, 'dapl', 'dvpl')
+@command(r"(da|dv)pl\s+%s" % PL, "dapl", "dvpl")
 def down_plist(dltype, parturl):
     """ Download YouTube playlist. """
 
@@ -196,19 +204,19 @@ def down_plist(dltype, parturl):
     dump(False)
     title = g.pafy_pls[parturl][0].title
     # Remove double quotes for convenience
-    subdir = util.sanitize_filename(title.replace('"', ''))
+    subdir = util.sanitize_filename(title.replace('"', ""))
     down_many(dltype, "1-", subdir=subdir)
     msg = g.message
     plist(parturl)
     g.message = msg
 
 
-@command(r'(da|dv)upl\s+(.*)', 'daupl', 'dvupl')
+@command(r"(da|dv)upl\s+(.*)", "daupl", "dvupl")
 def down_user_pls(dltype, user):
     """ Download all user playlists. """
     user_pls(user)
     for i in g.ytpls:
-        down_plist(dltype, i.get('link'))
+        down_plist(dltype, i.get("link"))
 
     return
 
@@ -222,14 +230,13 @@ def _make_fname(song, ext=None, av=None, subdir=None):
         os.makedirs(ddir)
 
     if not ext:
-        stream = streams.select(streams.get(song),
-                                audio=av == "audio", m4a_ok=True)
-        ext = stream['ext']
+        stream = streams.select(streams.get(song), audio=av == "audio", m4a_ok=True)
+        ext = stream["ext"]
 
     # filename = song.title[:59] + "." + ext
     filename = song.title + "." + ext
     # Remove double quotes for convenience
-    filename = filename.replace('"', '')
+    filename = filename.replace('"', "")
     filename = os.path.join(ddir, util.sanitize_filename(filename))
     return filename
 
@@ -243,7 +250,7 @@ def extract_metadata(name):
 
         pos = name.find(" - ")
         artist = name[:pos].strip()
-        title = name[pos + 3:].strip()
+        title = name[pos + 3 :].strip()
 
     else:
         title = name.strip()
@@ -260,8 +267,11 @@ def remux_audio(filename, title):
     metadata = ["title=%s" % meta["title"]]
 
     if meta["artist"]:
-        metadata = ["title=%s" % meta["title"], "-metadata",
-                    "artist=%s" % meta["artist"]]
+        metadata = [
+            "title=%s" % meta["title"],
+            "-metadata",
+            "artist=%s" % meta["artist"],
+        ]
 
     cmd = [g.muxapp, "-y", "-i", temp_file, "-acodec", "copy", "-metadata"]
     cmd += metadata + ["-vn", filename]
@@ -291,7 +301,7 @@ def transcode(filename, enc_data):
         time.sleep(2)
         return filename
 
-    command = shlex.split(enc_data['command'])
+    command = shlex.split(enc_data["command"])
     newcom, outfn = command[::], ""
 
     for n, d in enumerate(command):
@@ -306,7 +316,7 @@ def transcode(filename, enc_data):
             newcom[n] = outfn = base
 
         elif d == "OUT.EXT":
-            newcom[n] = outfn = base + "." + enc_data['ext']
+            newcom[n] = outfn = base + "." + enc_data["ext"]
 
     returncode = subprocess.call(newcom)
 
@@ -347,7 +357,7 @@ def _download(song, filename, url=None, audio=False, allow_transcode=True):
 
     if not url:
         stream = streams.select(streams.get(song), audio=audio, m4a_ok=True)
-        url = stream['url']
+        url = stream["url"]
 
     # if an external download command is set, use it
     if config.DOWNLOAD_COMMAND.get:
@@ -358,19 +368,20 @@ def _download(song, filename, url=None, audio=False, allow_transcode=True):
 
     if not config.OVERWRITE.get:
         if os.path.exists(filename):
-            util.xprint("File exists. Skipping %s%s%s ..\n" %
-                        (c.r, filename, c.w))
+            util.xprint("File exists. Skipping %s%s%s ..\n" % (c.r, filename, c.w))
             time.sleep(0.2)
             return filename
 
     util.xprint("Downloading to %s%s%s .." % (c.r, filename, c.w))
-    status_string = ('  {0}{1:,}{2} Bytes [{0}{3:.2%}{2}] received. Rate: '
-                     '[{0}{4:4.0f} kbps{2}].  ETA: [{0}{5:.0f} secs{2}]')
+    status_string = (
+        "  {0}{1:,}{2} Bytes [{0}{3:.2%}{2}] received. Rate: "
+        "[{0}{4:4.0f} kbps{2}].  ETA: [{0}{5:.0f} secs{2}]"
+    )
 
     resp = urlopen(url)
-    total = int(resp.info()['Content-Length'].strip())
+    total = int(resp.info()["Content-Length"].strip())
     chunksize, bytesdone, t0 = 16384, 0, time.time()
-    outfh = open(filename, 'wb')
+    outfh = open(filename, "wb")
 
     while True:
         chunk = resp.read(chunksize)
@@ -391,12 +402,12 @@ def _download(song, filename, url=None, audio=False, allow_transcode=True):
             break
 
         status = status_string.format(*stats)
-        sys.stdout.write("\r" + status + ' ' * 4 + "\r")
+        sys.stdout.write("\r" + status + " " * 4 + "\r")
         sys.stdout.flush()
 
     active_encoder = g.encoders[config.ENCODER.get]
     ext = filename.split(".")[-1]
-    valid_ext = ext in active_encoder['valid'].split(",")
+    valid_ext = ext in active_encoder["valid"].split(",")
 
     if audio and g.muxapp:
         remux_audio(filename, song.title)
@@ -407,8 +418,9 @@ def _download(song, filename, url=None, audio=False, allow_transcode=True):
     return filename
 
 
-def menu_prompt(model, prompt=" > ", rows=None, header=None, theading=None,
-                footer=None, force=0):
+def menu_prompt(
+    model, prompt=" > ", rows=None, header=None, theading=None, footer=None, force=0
+):
     """ Generate a list of choice, returns item from model. """
     content = ""
 
@@ -430,8 +442,7 @@ def menu_prompt(model, prompt=" > ", rows=None, header=None, theading=None,
         return model[choice]
 
     elif force:
-        return menu_prompt(model, prompt, rows, header, theading, footer,
-                           force)
+        return menu_prompt(model, prompt, rows, header, theading, footer, force)
 
     elif not choice.strip():
         return False, False
@@ -446,24 +457,24 @@ def prompt_dl(song):
     dl_data, p = get_dl_data(song)
     dl_text = gen_dl_text(dl_data, song, p)
 
-    model = [x['url'] for x in dl_data]
+    model = [x["url"] for x in dl_data]
     ed = enumerate(dl_data)
-    model = {str(n + 1): (x['url'], x['ext']) for n, x in ed}
+    model = {str(n + 1): (x["url"], x["ext"]) for n, x in ed}
     url, ext = menu_prompt(model, "Download number: ", *dl_text)
     url2 = ext2 = None
-    mediatype = [i for i in dl_data if i['url'] == url][0]['mediatype']
+    mediatype = [i for i in dl_data if i["url"] == url][0]["mediatype"]
 
     if mediatype == "video" and g.muxapp and not config.DOWNLOAD_COMMAND.get:
         # offer mux if not using external downloader
         dl_data, p = get_dl_data(song, mediatype="audio")
         dl_text = gen_dl_text(dl_data, song, p)
         au_choices = "1" if len(dl_data) == 1 else "1-%s" % len(dl_data)
-        footer = [util.F('-audio') % ext, util.F('select mux') % au_choices]
+        footer = [util.F("-audio") % ext, util.F("select mux") % au_choices]
         dl_text = tuple(dl_text[0:3]) + (footer,)
         aext = ("ogg", "m4a")
-        model = [x['url'] for x in dl_data if x['ext'] in aext]
+        model = [x["url"] for x in dl_data if x["ext"] in aext]
         ed = enumerate(dl_data)
-        model = {str(n + 1): (x['url'], x['ext']) for n, x in ed}
+        model = {str(n + 1): (x["url"], x["ext"]) for n, x in ed}
         prompt = "Audio stream: "
         url2, ext2 = menu_prompt(model, prompt, *dl_text)
 
@@ -487,8 +498,7 @@ def gen_dl_text(ddata, song, p):
     content = []
 
     for n, d in enumerate(ddata):
-        row = (n + 1, d['ext'], d['quality'], d['mediatype'], d['size'],
-               d['notes'])
+        row = (n + 1, d["ext"], d["quality"], d["mediatype"], d["size"], d["notes"])
         fmt = "  {0}%-6s %-8s %-13s %-7s %5s Mb   %-16s{1}"
         row = fmt.format(c.g, c.w) % row
         content.append(row)
@@ -527,12 +537,14 @@ def get_dl_data(song, mediatype="any"):
             util.dbg(c.r + "---Error getting stream size" + c.w)
             size = 0
 
-        item = {'mediatype': stream.mediatype,
-                'size': size,
-                'ext': stream.extension,
-                'quality': stream.quality,
-                'notes': stream.notes,
-                'url': stream.url}
+        item = {
+            "mediatype": stream.mediatype,
+            "size": size,
+            "ext": stream.extension,
+            "quality": stream.quality,
+            "notes": stream.notes,
+            "url": stream.url,
+        }
 
         dldata.append(item)
 
@@ -540,7 +552,7 @@ def get_dl_data(song, mediatype="any"):
     return dldata, p
 
 
-@command(r'dlurl\s(.*[-_a-zA-Z0-9]{11}.*)', 'dlurl')
+@command(r"dlurl\s(.*[-_a-zA-Z0-9]{11}.*)", "dlurl")
 def dl_url(url):
     """ Open and prompt for download of youtube video url. """
     g.browse_mode = "normal"
@@ -553,7 +565,7 @@ def dl_url(url):
         sys.exit()
 
 
-@command(r'daurl\s(.*[-_a-zA-Z0-9]{11}.*)', 'daurl')
+@command(r"daurl\s(.*[-_a-zA-Z0-9]{11}.*)", "daurl")
 def da_url(url):
     """ Open and prompt for download of youtube best audio from url. """
     g.browse_mode = "normal"
